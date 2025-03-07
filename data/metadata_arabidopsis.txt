@@ -1,0 +1,57 @@
+code --- combination of population, genotype, treatment, and replicate; example: B14o2 (population B, genotype 14, treatment o, replicate 2)
+
+population --- Arabidopsis seeds were collected in the field from two different populations, B or C, that correspond to two differentiated areas in the South of Spain; Xavier Picó (EBD-CSIC) collected and stored them
+
+genotype --- Arabidopsis genotypes, denoted by different numbers; i.e., for population B: 3, 14, 24, 28, 30, 37, 53, 56, 57, 60, 61; and for population C: 1, 5, 8, 13, 15, 19, 26, 30, 34, 43, 45, 50, 55, 61, 64
+
+treatment --- "o" for control (emitter plants not subjected to herbivory by Spodoptera littoralis) and "h" for herbivory (emitter plants subjected to herbivory by S. littoralis)
+
+n --- replicate number, from 1 to 3 (each genotype per population and treatment is replicated three times)
+
+larva_emitter --- weight (g) of Spodoptera littoralis larvae before being placed on emitter plants; zero values are given for the control treatment; weight after herbivory was not measured
+
+size_emitter --- size of the emitter Arabidopsis plant on a qualitative scale: 1 (small), 2 (medium small), 3 (medium big), or 4 (big)
+
+herbivory_emitter --- herbivory damage (percentage) caused by Spodoptera littoralis on emitter plants, calculated visually by comparing before-after pictures (the architecture of Arabidopsis makes it difficult to use software)
+
+larva_receiver --- weight (g) of Spodoptera littoralis larvae before being placed on receiver plants
+
+size_receiver --- size of the receiver Arabidopsis plant on a qualitative scale: 1 (small), 2 (medium small), 3 (medium big), or 4 (big)
+
+herbivory_receiver --- herbivory damage (percentage) caused by Spodoptera littoralis on receiver plants, calculated visually by comparing before-after pictures (the architecture of Arabidopsis makes it difficult to use software)
+
+voc1 --- 2-butenal, 2-methyl-, (E)- (ng)
+
+voc2 --- alpha-pinene /929 alpha-thujene/966 beta-thujene (ng)
+
+voc3 --- beta-pinene (ng)
+
+voc4 --- 2-heptanone, 5-methyl (ng)
+
+voc5 --- 5-hepten-2-one, 6-methyl- (ng)
+
+voc6 --- butanoic acid, butyl ester (ng)
+
+voc7 --- 1-hexanol, 2-ethyl- (ng)
+
+voc8 --- acetophenone (ng)
+
+voc9 --- nonanal (ng)
+
+voc10 --- cis-2-nonenal (ng)
+
+voc11 --- dodecane (ng)
+
+voc12 --- decanal (ng)
+
+voc13 --- tridecane (ng)
+
+voc14 --- tetradecane (ng)
+
+voc15 --- dodecanal (=lauraldehyde) (ng)
+
+voc16 --- trans-geranylaceone (ng)
+
+voc17 --- tetradecanal (ng)
+
+total --- sum of all volatiles (ng)

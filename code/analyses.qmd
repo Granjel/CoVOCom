@@ -1,0 +1,188 @@
+---
+title: "analyses"
+date: today
+format:
+  html:
+    toc: true
+    number-sections: true
+    toc-location: right
+execute:
+  warning: false
+  echo: true
+  eval: false
+---
+
+## Load libraries
+
+```{r libraries}
+#| warning: false
+#| message: false
+library(here)
+library(lmerTest)
+library(lsmeans)
+library(tidyr)
+library(tidyverse)
+library(vegan)
+library(ggpubr)
+library(ggrepel)
+library(stats)
+library(rmarkdown)
+library(reshape)
+library(dplyr)
+library(ggrepel)
+library(multcomp)
+library(permute)
+library(lattice)
+library(car)
+library(ggplot2)
+```
+
+## Data set
+
+Description of the structure of the data set...
+
+```{r data}
+#| warning: false
+#| message: false
+data <- read.csv(file = here("data/lucia/damage.csv"), h = TRUE, sep = ";", na.strings = "NA")
+data <- read.csv(file = here("data/lucia/population.csv"), h = TRUE, sep = ";", na.strings = "NA")
+data <- read.csv(file = here("data/lucia/damage.emitters.csv"), h = TRUE, sep = ";", na.strings = "NA")
+
+attach(data)
+
+data$Gen <- as.factor(data$Gen)
+data$Treat <- as.factor(data$Treat)
+data$ID <- as.factor(data$ID)
+data$population <- as.factor(data$population)
+data$herbivory_receiver <- as.numeric(data$herbivory_receiver)
+data$size_receiver <- as.numeric(data$size_receiver)
+data$herbivory_emitter <- as.numeric(data$herbivory_emitter)
+```
+
+```{r normality}
+str(data)
+
+#emitters
+hist(data$herbivory_emitter)
+hist(sqrt(data$herbivory_emitter))
+hist(log(data$herbivory_emitter + 1))
+
+#receivers
+hist(data$herbivory_receiver)
+hist(sqrt(data$herbivory_receiver))
+hist(log(data$herbivory_receiver + 1))
+
+summary(data)
+```
+
+```{r model_herbivory_emitters}
+#comprobamos efecto población
+lme = lmer(sqrt(herbivory_receiver)~ H_E + population + (1|Gen), data = data) #genotipo como factor aleatorio hay efecto de la población
+
+
+
+lme = lmer(sqrt(herbivory_receiver) ~ H_E * population + (1 | population:Gen), data = data)
+
+Anova(lme, type = "III")
+
+
+anova(lme)
+
+summary(lme)
+resid(lme)
+shapiro.test((resid(lme)))
+hist(resid(lme))
+
+lsmeanse = as.data.frame(lsmeans(lme, pairwise ~ population, adjustSigma = TRUE, adjust = "tukey", type="response"))
+
+library(openxlsx) #guardamos en excel
+write.xlsx(lsmeanse, "lsmeans population emitters efct.xlsx")
+
+#vemos efecto del genotipo dentro de cada población
+
+lme = lm(sqrt(herbivory_emitter)~ H_E + Gen, data=data)
+
+anova(lme)
+
+lsmeanse= as.data.frame(lsmeans(lme, pairwise ~ Gen, adjustSigma = TRUE, adjust = "tukey", type="response"))
+
+lsmeans=lsmeans(lme, pairwise ~ Gen, adjustSigma = TRUE, adjust = "tukey")# tukey test
+
+lsmeans_result <- lsmeans(lme, pairwise ~ Gen, adjustSigma = TRUE, adjust = "tukey", type="response")
+
+cld(lsmeans_result)
+
+#efecto tratamientio con población como factor aleatorio
+
+lme= lmer(sqrt(herbivory_emitter)~ H_E + Gen + (1|population), data=data)
+anova(lme)
+
+summary(lme)
+resid(lme)
+shapiro.test((resid(lme)))
+hist(resid(lme))
+
+lsmeanse= as.data.frame(lsmeans(lme, pairwise ~ Gen, adjustSigma = TRUE, adjust = "tukey", type="response"))
+
+lsmeans=lsmeans(lme, pairwise ~ Gen, adjustSigma = TRUE, adjust = "tukey")# tukey test
+
+lsmeans_result <- lsmeans(lme, pairwise ~ Gen, adjustSigma = TRUE, adjust = "tukey", type="response")
+
+cld(lsmeans_result)
+
+library(openxlsx) #guardamos en excel
+write.xlsx(lsmeansh, "lsmeans emitters.xlsx")
+```
+
+
+```{r}
+
+data1 <- lsmeanse 
+
+data1
+
+data1$population <- as.factor(data1$population)
+
+plotD= ggplot(data1, aes(x = population, y = lsmean, fill = population)) +
+  geom_bar(stat = "identity", color = "black", linewidth = 0.5, width = 0.5) +
+geom_errorbar(aes(ymin = lsmean - SE, ymax = lsmean + SE), width = 0.2) +
+  labs(title = "", x = "Emitter population", y = "Leaf damage on emitters (%)") +
+ scale_x_discrete(labels = c("B", "C")) +
+  scale_fill_manual(values = c("lightgoldenrodyellow", "lavender")) +
+theme_bw()+ theme(axis.title.y = element_text(margin = margin(t = 1, r = 12, b = 1, l = 1)))+ theme(axis.title.x = element_text(margin = margin(t = 10, r = 16, b = 10, l = 10)))+
+  theme(legend.position = "none")  # Remove legend
+
+plotE= plotD + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),panel.background = element_blank(), axis.line = element_line(colour = "black"))
+  
+plotE
+
+ggsave(plotE, file = 'FIGURE emitter population and damage.2.tiff', width=150, height=100, units='mm', dpi=300)
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
