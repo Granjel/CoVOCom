@@ -188,7 +188,7 @@ f <- 0.75 # scaling factor for dimensions
 ggsave(
   plot = p_emitter_damage,
   "figures/fig-emitter-damage.png",
-  width = 6.5 * f,
-  height = 4.5 * f,
-  dpi = 640
+  width = fig_width * f,
+  height = fig_height * f,
+  dpi = fig_dpi
 )
