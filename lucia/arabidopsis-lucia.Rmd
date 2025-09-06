@@ -177,7 +177,12 @@ ggsave(
 
 ### cargamos los datos como table
 
-data <- read.csv(file = "Damage2.csv", h = T, sep = ";", na.strings = "NA")
+data <- read.csv(
+  file = "lucia/Damage2.csv",
+  h = T,
+  sep = ";",
+  na.strings = "NA"
+)
 
 data
 head(data)
