@@ -19,15 +19,19 @@ names(pal_treat) <- c(
 )
 
 # load data
-dat <- readxl::read_xlsx("data/arabidopsis.xlsx") %>%
+dat <- read.csv("data/arabidopsis.csv") %>%
   # transform population values from B to Bon and from C to Cai
   mutate(
-    population = recode(population, "B" = "Bon", "C" = "Cai"),
+    population = dplyr::recode(population, "B" = "Bon", "C" = "Cai"),
     population = factor(population, levels = c("Bon", "Cai"))
   ) %>%
   # transform treatment values from o to Control and from h to Herbivore-induced
   mutate(
-    treatment = recode(treatment, "o" = "Control", "h" = "Herbivore-induced"),
+    treatment = dplyr::recode(
+      treatment,
+      "o" = "Control",
+      "h" = "Herbivore-induced"
+    ),
     treatment = factor(treatment, levels = c("Control", "Herbivore-induced"))
   ) %>%
   # add interaction column for population and treatment
@@ -117,12 +121,12 @@ p_damage_receiver <-
 star_lbl <- c(Bon = "**", Cai = "**") # or e.g., c(Bon="***", Cai="ns")
 
 # compute a nice y position per population (just above the tallest value)
-stars_df <- dat |>
-  dplyr::group_by(population) |>
+stars_df <- dat %>%
+  dplyr::group_by(population) %>%
   dplyr::summarise(
     y_top = max(herbivory_receiver, na.rm = TRUE),
     .groups = "drop"
-  ) |>
+  ) %>%
   dplyr::mutate(
     y = y_top + 0.05 * diff(range(dat$herbivory_receiver, na.rm = TRUE)),
     label = star_lbl[as.character(population)]
