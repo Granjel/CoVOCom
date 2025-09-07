@@ -438,6 +438,8 @@ data1 <- read.csv(
   sep = ";",
   na.strings = "NA"
 )
+data1 <- lsmeansh
+
 # Configurar factores correctamente
 data1$population <- factor(data1$population, levels = c("Bon", "Cai"))
 data1$Treat <- factor(data1$Treat, levels = c("c", "h"))
