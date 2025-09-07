@@ -262,7 +262,6 @@ p_damage_receiver_boxplot <-
   ) +
 
   # use the same two-color palette for both fill and point color
-  scale_color_manual(values = pal_treat, name = "Treatment") +
   scale_fill_manual(values = pal_treat, name = "Treatment") +
 
   # labels and theme
