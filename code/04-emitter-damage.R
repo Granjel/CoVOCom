@@ -23,8 +23,8 @@ emitter_damage <- df %>%
 # explore data and fit model ---------------------------------------------
 
 # data exploration
-# hist(emitter_damage$herbivory_emitter) # untransformed data is right-skewed
-# hist(sqrt(emitter_damage$herbivory_emitter)) # square root transformation looks better
+# hist(emitter_damage$herbivory_emitter) # untransformed data
+# hist(sqrt(emitter_damage$herbivory_emitter)) # square root transformation
 
 # LMM of damage on emitters
 lmm_emitter_damage <- lmer(

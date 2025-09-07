@@ -22,8 +22,8 @@ receiver_damage <- df %>%
 # explore data and fit model ---------------------------------------------
 
 # data exploration
-# hist(receiver_damage$herbivory_receiver) # untransformed data is slightly right-skewed
-# hist(sqrt(receiver_damage$herbivory_receiver)) # square root transformation looks better
+# hist(receiver_damage$herbivory_receiver) # untransformed data
+# hist(sqrt(receiver_damage$herbivory_receiver)) # square root transformation
 
 # GLMM of damage on receivers
 glmm_receiver_damage <- lmer(
