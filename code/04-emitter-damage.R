@@ -28,6 +28,7 @@ emitter_damage <- df %>%
 
 # LMM of damage on emitters
 lmm_emitter_damage <- lmer(
+  # random intercept for genotype nested within population
   sqrt(herbivory_emitter) ~ population + (1 | population:genotype),
   data = emitter_damage
 )
@@ -44,17 +45,24 @@ emm_emitter_damage <-
     adjustSigma = TRUE,
     adjust = "tukey",
     type = "response"
-  )
+  ) # Bon significantly higher than Cai
 
 # save EMMs to a CSV file
 write.csv(
   as.data.frame(emm_emitter_damage$emmeans),
-  "tables/emitter-damage-emmeans.csv",
+  "tables/emm-emitter-damage-emmeans.csv",
+  row.names = FALSE
+)
+
+# save pairwise contrasts to a CSV file
+write.csv(
+  as.data.frame(emm_emitter_damage$contrasts),
+  "tables/emm-emitter-damage-contrasts.csv",
   row.names = FALSE
 )
 
 # compact letter display (CLD) for EMMs
-cld_emitter_damage <- cld(emm_emitter_damage)
+cld_emitter_damage <- cld(emm_emitter_damage, Letters = TRUE)
 
 # p-values for pairwise comparisons
 pvalue_emitter_damage <- summary(emm_emitter_damage$contrasts)$p.value
@@ -188,6 +196,93 @@ f <- 0.75 # scaling factor for dimensions
 ggsave(
   plot = p_emitter_damage,
   "figures/fig-emitter-damage.png",
+  width = fig_width * f,
+  height = fig_height * f,
+  dpi = fig_dpi
+)
+
+# additional: regular boxplot --------------------------------------------
+
+# plot options
+transparency_boxplot <- 1 # alpha for all layers so overlaps are visible
+justification_boxplot <- 0 # shifts right half leftwards and left half rightwards
+width_boxplot <- 0.5 # max halfeye width (as a fraction of panel width)
+mean_size <- 2.5 # size of mean point
+star_size <- 7 # size of significance stars
+
+# plot herbivory on emitter plants
+p_emitter_damage_boxplot <-
+  ggplot(
+    emitter_damage,
+    aes(x = population, y = herbivory_emitter, fill = population)
+  ) +
+
+  # central boxplot for a robust summary per group
+  geom_boxplot(
+    position = position_nudge(
+      x = c(justification_boxplot, -justification_boxplot)
+    ),
+    outlier.shape = NA,
+    alpha = transparency_boxplot,
+    width = width_boxplot,
+    color = "black"
+  ) +
+
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    alpha = transparency_boxplot,
+    shape = 20,
+    size = mean_size,
+    stroke = 0.55,
+    position = position_nudge(
+      x = c(justification_boxplot, -justification_boxplot)
+    )
+  ) +
+
+  # tighten panel padding
+  scale_y_continuous(
+    breaks = seq(0, 109, 20),
+    expand = expansion(mult = c(0, 0.038))
+  ) +
+
+  # use the same two-color palette for both fill and point color
+  scale_fill_manual(values = pal_pop, name = "Treatment") +
+
+  # labels and theme
+  labs(x = "Population", y = "Leaf damage on emitter plants (%)") +
+  theme(panel.grid.major.x = element_blank(), legend.position = "none")
+
+# data frame with significance stars
+stars_emitter_damage <- data.frame(
+  population = 1.5,
+  herbivory_emitter = max(emitter_damage$herbivory_emitter, na.rm = TRUE) *
+    1.025,
+  label = ifelse(
+    pvalue_emitter_damage < 0.001,
+    "***",
+    ifelse(
+      pvalue_emitter_damage < 0.01,
+      "**",
+      ifelse(pvalue_emitter_damage < 0.05, "*", "ns")
+    )
+  )
+)
+
+# add significance stars to the plot
+p_emitter_damage_boxplot <- p_emitter_damage_boxplot +
+  geom_text(
+    data = stars_emitter_damage,
+    aes(x = population, y = herbivory_emitter, label = label),
+    inherit.aes = FALSE,
+    size = star_size
+  )
+
+# save plot
+f <- 0.75 # scaling factor for dimensions
+ggsave(
+  plot = p_emitter_damage_boxplot,
+  "figures/fig-emitter-damage-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
