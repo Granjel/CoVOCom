@@ -1,4 +1,4 @@
-# damage on emitters
+# damage on receivers
 
 # load packages and data -------------------------------------------------
 
@@ -19,6 +19,68 @@ receiver_damage <- df %>%
     herbivory_receiver
   )
 
+# explore data and fit model ---------------------------------------------
+
+# data exploration
+# hist(receiver_damage$herbivory_receiver) # untransformed data is slightly right-skewed
+# hist(sqrt(receiver_damage$herbivory_receiver)) # square root transformation looks better
+
+# GLMM of damage on receivers
+glmm_receiver_damage <- lmer(
+  # interaction between treatment and population and random intercept for genotype nested within population
+  sqrt(herbivory_receiver) ~ treatment * population + (1 | population:genotype),
+  data = receiver_damage
+)
+
+# model diagnostics
+shapiro.test(resid(glmm_receiver_damage)) # residuals are normally distributed (p > 0.05)
+# hist(resid(glmm_receiver_damage))
+# simulateResiduals(fittedModel = glmm_receiver_damage, plot = TRUE) # DHARMa diagnostics look okay
+
+# glmm_receiver_damage <- glmmTMB(
+#   sqrt(herbivory_receiver) ~ treatment * population + (1 | population:genotype),
+#   family = glmmTMB::tweedie(link = "log"),
+#   data = receiver_damage
+# )
+
+# estimated marginal means (EMMs) for population
+# emmeans(
+#     glmm_receiver_damage,
+#     pairwise ~ population,
+#     adjustSigma = TRUE,
+#     adjust = "tukey",
+#     type = "response"
+#   ) # no significant differences between populations
+
+# estimated marginal means (EMMs) for treatment within population
+emm_receiver_damage <-
+  emmeans(
+    glmm_receiver_damage,
+    pairwise ~ treatment | population,
+    adjustSigma = TRUE,
+    adjust = "tukey",
+    type = "response"
+  ) # significant differences between treatments within populations
+
+# save EMMs to a CSV file
+write.csv(
+  as.data.frame(emm_receiver_damage$emmeans),
+  "tables/emm_receiver_damage-emmeans.csv",
+  row.names = FALSE
+)
+
+# save pairwise contrasts to a CSV file
+write.csv(
+  as.data.frame(emm_receiver_damage$contrasts),
+  "tables/emm_receiver_damage-contrasts.csv",
+  row.names = FALSE
+)
+
+# compact letter display (CLD) for EMMs for treatment within population
+cld_receiver_damage <- cld(emm_receiver_damage, Letters = TRUE)
+
+# p-values for pairwise comparisons
+pvalue_receiver_damage <- summary(emm_receiver_damage$contrasts)$p.value
 
 # plot -------------------------------------------------------------------
 
@@ -122,20 +184,21 @@ p_damage_receiver <-
     legend.position = c(0.735, 0.89)
   )
 
-# stars you used in the barplot (edit as needed)
-star_lbl <- c(Bon = "**", Cai = "**") # or e.g., c(Bon="***", Cai="ns")
-
 # compute a nice y position per population (just above the tallest value)
-stars_df <- receiver_damage %>%
+stars_receiver_damage <- receiver_damage %>%
   dplyr::group_by(population) %>%
   dplyr::summarise(
-    y_top = max(herbivory_receiver, na.rm = TRUE),
+    y = max(herbivory_receiver, na.rm = TRUE) +
+      0.025 * diff(range(herbivory_receiver, na.rm = TRUE)),
     .groups = "drop"
   ) %>%
   dplyr::mutate(
-    y = y_top +
-      0.025 * diff(range(receiver_damage$herbivory_receiver, na.rm = TRUE)),
-    label = star_lbl[as.character(population)]
+    label = dplyr::case_when(
+      pvalue_receiver_damage < 0.001 ~ "***",
+      pvalue_receiver_damage < 0.01 ~ "**",
+      pvalue_receiver_damage < 0.05 ~ "*",
+      TRUE ~ "ns"
+    )
   )
 
 # add to your existing plot object
@@ -143,7 +206,7 @@ p_damage_receiver <-
   p_damage_receiver +
   # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # a bit of headroom
   geom_text(
-    data = stars_df,
+    data = stars_receiver_damage,
     aes(x = population, y = y, label = label),
     inherit.aes = FALSE,
     size = star_size
@@ -154,6 +217,100 @@ f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_damage_receiver,
   "figures/fig-receiver-damage.png",
+  width = fig_width * f,
+  height = fig_height * f,
+  dpi = fig_dpi
+)
+
+# additional: regular boxplot --------------------------------------------
+
+# global plot parameters
+position_boxplot <- 0.6 # global knob for horizontal dodging; larger = more separation
+transparency_boxplot <- 0.9 # alpha for all layers so overlaps are visible
+width_boxplot <- 0.5 # max halfeye width (as a fraction of panel width)
+mean_size <- 2.5 # size of mean point
+star_size <- 7 # size of significance stars
+
+# plot herbivory on receiver plants
+p_damage_receiver_boxplot <-
+  ggplot(
+    receiver_damage,
+    aes(x = population, y = herbivory_receiver, fill = treatment)
+  ) +
+
+  # central boxplot for a robust summary per group
+  geom_boxplot(
+    position = position_dodge(width = position_boxplot),
+    outlier.shape = NA,
+    alpha = transparency_boxplot,
+    width = width_boxplot
+  ) +
+
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    alpha = transparency_boxplot,
+    shape = 20,
+    size = mean_size,
+    stroke = 0.55,
+    position = position_dodge(width = position_boxplot)
+  ) +
+
+  # tighten panel padding
+  scale_y_continuous(
+    breaks = seq(0, 109, 20),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+
+  # use the same two-color palette for both fill and point color
+  scale_color_manual(values = pal_treat, name = "Treatment") +
+  scale_fill_manual(values = pal_treat, name = "Treatment") +
+
+  # labels and theme
+  labs(x = "Population", y = "Leaf damage on receiver plants (%)") +
+  theme(
+    panel.grid.major.x = element_blank(),
+    # legend.background = element_rect(
+    #   color = "black",
+    #   linewidth = 0.5,
+    #   linetype = "solid"
+    # ),
+    legend.position = c(0.735, 0.89)
+  )
+
+# compute a nice y position per population (just above the tallest value)
+stars_receiver_damage <- receiver_damage %>%
+  dplyr::group_by(population) %>%
+  dplyr::summarise(
+    y = max(herbivory_receiver, na.rm = TRUE) +
+      0.025 * diff(range(herbivory_receiver, na.rm = TRUE)),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(
+    label = dplyr::case_when(
+      pvalue_receiver_damage < 0.001 ~ "***",
+      pvalue_receiver_damage < 0.01 ~ "**",
+      pvalue_receiver_damage < 0.05 ~ "*",
+      TRUE ~ "ns"
+    )
+  )
+
+# add to your existing plot object
+p_damage_receiver_boxplot <-
+  p_damage_receiver_boxplot +
+  # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # a bit of headroom
+  geom_text(
+    data = stars_receiver_damage,
+    aes(x = population, y = y, label = label),
+    inherit.aes = FALSE,
+    size = star_size
+  )
+
+# save plot
+# f <- 0.85 # scaling factor for dimensions
+ggsave(
+  plot = p_damage_receiver_boxplot,
+  "figures/fig-receiver-damage-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
