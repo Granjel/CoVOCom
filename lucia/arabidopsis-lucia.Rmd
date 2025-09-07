@@ -201,7 +201,7 @@ data$population = as.factor(data$population)
 modelo_anidado <- lmer(
   herbivory_receiver ~ Treat * population + (1 | population:Gen),
   data = data
-) #este es el que tenemos en resultados (modelo mixto)
+) # este es el que tenemos en resultados (modelo mixto)
 
 anova(modelo_anidado)
 
@@ -271,7 +271,7 @@ write.xlsx(lsmeansh, "lsmeans receptoras Treat.pop.xlsx")
 
 ```{r Plot Treath, echo=FALSE}
 data1 <- read.csv(
-  file = "lsmeans receptoras Treat.pop.csv",
+  file = "lucia/lsmeans receptoras Treat.pop.csv",
   h = T,
   sep = ";",
   na.strings = "NA"
@@ -327,7 +327,7 @@ ggsave(
 
 ### cargamos los datos como table
 
-data <- read.csv(file = "VOCs.csv", h = T, sep = ";", na.strings = "NA") #general
+data <- read.csv(file = "lucia/VOCs.csv", h = T, sep = ";", na.strings = "NA") #general
 data
 
 head(data)
