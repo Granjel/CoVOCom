@@ -34,8 +34,8 @@ lmm_emitter_damage <- lmer(
 )
 
 # model diagnostics
-shapiro.test(resid(lmm_emitter_damage)) # residuals are normally distributed (p > 0.05)
-# hist(resid(lmm_emitter_damage)) # histogram of residuals looks reasonably normal
+# shapiro.test(resid(lmm_emitter_damage)) # Shapiro-Wilk test for normality of residuals
+# hist(resid(lmm_emitter_damage)) # histogram of residuals
 
 # estimated marginal means (EMMs) for population
 emm_emitter_damage <-

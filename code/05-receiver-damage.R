@@ -32,10 +32,8 @@ glmm_receiver_damage <- lmer(
   data = receiver_damage
 )
 
-# model diagnostics
-shapiro.test(resid(glmm_receiver_damage)) # residuals are normally distributed (p > 0.05)
-# hist(resid(glmm_receiver_damage))
-# simulateResiduals(fittedModel = glmm_receiver_damage, plot = TRUE) # DHARMa diagnostics look okay
+# model diagnostics with DHARMa
+# simulateResiduals(fittedModel = glmm_receiver_damage, plot = TRUE)
 
 # alternative: glmmTMB with Tweedie distribution
 # glmm_receiver_damage <- glmmTMB(
