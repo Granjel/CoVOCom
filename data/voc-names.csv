@@ -1,18 +1,18 @@
-"id","compound"
-"voc1","2-butenal, 2-methyl-, (E)-"
-"voc2","alpha-pinene"
-"voc3","beta-pinene"
-"voc4","2-heptanone, 5-methyl"
-"voc5","5-hepten-2-one, 6-methyl-"
-"voc6","butanoic acid, butyl ester"
-"voc7","1-hexanol, 2-ethyl-"
-"voc8","acetophenone"
-"voc9","nonanal"
-"voc10","cis-2-nonenal"
-"voc11","dodecane"
-"voc12","decanal"
-"voc13","tridecane"
-"voc14","tetradecane"
-"voc15","dodecanal"
-"voc16","trans-geranylaceone"
-"voc17","tetradecanal"
+id,compound,group
+voc1,"2-Butenal, 2-methyl-, (E)-",
+voc2,?-Pinene,Monoterpenes
+voc3,?-Pinene,Monoterpenes
+voc4,"2-Heptanone, 5-methyl-",
+voc5,"5-Hepten-2-one, 6-methyl-",
+voc6,"Butanoic acid, butyl ester",Alcohols and esters
+voc7,"1-Hexanol, 2-ethyl-",Alcohols and esters
+voc8,Acetophenone,Aromatic compounds
+voc9,Nonanal,GLVs
+voc10,cis-2-Nonenal,GLVs
+voc11,Dodecane,Long chain alkanes
+voc12,Decanal,
+voc13,Tridecane,Long chain alkanes
+voc14,Tetradecane,Long chain alkanes
+voc15,Dodecanal,
+voc16,trans-Geranylaceone,
+voc17,Tetradecanal,
