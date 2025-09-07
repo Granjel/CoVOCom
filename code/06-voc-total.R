@@ -89,7 +89,7 @@ star_size <- 5 # size of significance stars
 p_voc_total <-
   ggplot(
     voc_total,
-    aes(x = population, y = log(total), fill = treatment)
+    aes(x = population, y = total, fill = treatment)
   ) +
 
   # jittered raw points
@@ -154,18 +154,29 @@ p_voc_total <-
     position = position_dodge(width = 0.1 * position_boxplot)
   ) +
 
-  # tighten panel padding
+  # padding around x-axis
   scale_x_discrete(expand = c(0, 0)) +
+
+  # # log y scale
+  # scale_y_log10(
+  #   breaks = scales::log_breaks(n = 7),
+  #   expand = expansion(mult = c(0, 0.05))
+  # ) +
+
+  # linear y scale
   scale_y_continuous(
     expand = expansion(mult = c(0, 0.05))
   ) +
+
+  # limit y-axis to avoid extreme outliers
+  coord_cartesian(ylim = quantile(voc_total$total, c(0, 0.925))) +
 
   # use the same two-color palette for both fill and point color
   scale_color_manual(values = pal_treat, name = "Treatment") +
   scale_fill_manual(values = pal_treat, name = "Treatment") +
 
   # labels and theme
-  labs(x = "Population", y = "Total VOC emmisions (ng/h; log-scaled)") +
+  labs(x = "Population", y = "Total VOC emmisions (ng)") +
   theme(
     panel.grid.major.x = element_blank(),
     # legend.background = element_rect(
@@ -180,12 +191,13 @@ p_voc_total <-
 stars_voc_total <- voc_total %>%
   dplyr::distinct(population) %>%
   dplyr::mutate(
-    y = max(log(voc_total$total), na.rm = TRUE) * 1.05,
+    # y = max(voc_total$total) * 1.025,
+    y = quantile(voc_total$total, c(0.925)) * 1.0275,
     label = dplyr::case_when(
       pvalue_voc_total < 0.001 ~ "***",
       pvalue_voc_total < 0.01 ~ "**",
       pvalue_voc_total < 0.05 ~ "*",
-      TRUE ~ "ns"
+      TRUE ~ ""
     )
   )
 
@@ -223,7 +235,7 @@ star_size <- 5 # size of significance stars
 p_voc_total_boxplot <-
   ggplot(
     voc_total,
-    aes(x = population, y = log(total), fill = treatment)
+    aes(x = population, y = total, fill = treatment)
   ) +
 
   # central boxplot for a robust summary per group
@@ -244,16 +256,26 @@ p_voc_total_boxplot <-
     position = position_dodge(width = position_boxplot)
   ) +
 
-  # tighten panel padding
+  # # log y scale
+  # scale_y_log10(
+  #   # breaks = scales::log_breaks(n = 15),
+  #   breaks = c(2, 5, 10, 25, 50, 100, 250, 500, 1000),
+  #   expand = expansion(mult = c(0, 0.05))
+  # ) +
+
+  # linear y scale
   scale_y_continuous(
     expand = expansion(mult = c(0, 0.05))
   ) +
+
+  # limit y-axis to avoid extreme outliers
+  coord_cartesian(ylim = quantile(voc_total$total, c(0, 0.925))) +
 
   # use the same two-color palette for both fill and point color
   scale_fill_manual(values = pal_treat, name = "Treatment") +
 
   # labels and theme
-  labs(x = "Population", y = "Total VOC emmisions (ng/h; log-scaled)") +
+  labs(x = "Population", y = "Total VOC emmisions (ng)") +
   theme(
     panel.grid.major.x = element_blank(),
     # legend.background = element_rect(
@@ -268,12 +290,13 @@ p_voc_total_boxplot <-
 stars_voc_total <- voc_total %>%
   dplyr::distinct(population) %>%
   dplyr::mutate(
-    y = max(log(voc_total$total), na.rm = TRUE) * 1.05,
+    # y = max(voc_total$total, na.rm = TRUE) * 1.025,
+    y = quantile(voc_total$total, c(0.925)) * 1.0275,
     label = dplyr::case_when(
       pvalue_voc_total < 0.001 ~ "***",
       pvalue_voc_total < 0.01 ~ "**",
       pvalue_voc_total < 0.05 ~ "*",
-      TRUE ~ "ns"
+      TRUE ~ ""
     )
   )
 
