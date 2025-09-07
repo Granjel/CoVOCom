@@ -37,6 +37,7 @@ shapiro.test(resid(glmm_receiver_damage)) # residuals are normally distributed (
 # hist(resid(glmm_receiver_damage))
 # simulateResiduals(fittedModel = glmm_receiver_damage, plot = TRUE) # DHARMa diagnostics look okay
 
+# alternative: glmmTMB with Tweedie distribution
 # glmm_receiver_damage <- glmmTMB(
 #   sqrt(herbivory_receiver) ~ treatment * population + (1 | population:genotype),
 #   family = glmmTMB::tweedie(link = "log"),
