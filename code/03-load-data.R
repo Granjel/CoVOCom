@@ -14,11 +14,9 @@ df <- read.csv(
 ) %>%
   # convert columns to appropriate types
   mutate(
-    code = as.factor(code),
     # rename population levels
     population = dplyr::recode(population, "B" = "Bon", "C" = "Cai"),
     population = factor(population, levels = c("Bon", "Cai")),
-    genotype = as.factor(genotype),
     # rename treatment levels
     treatment = dplyr::recode(
       treatment,
@@ -26,6 +24,12 @@ df <- read.csv(
       "h" = "Herbivore-induced"
     ),
     treatment = factor(treatment, levels = c("Control", "Herbivore-induced")),
+
+    # variables as factor
+    code = as.factor(code),
+    genotype = as.factor(genotype),
+
+    # variables as numeric
     n = as.numeric(n),
     larva_emitter = as.numeric(larva_emitter),
     size_emitter = as.numeric(size_emitter),
@@ -50,7 +54,5 @@ df <- read.csv(
     voc15 = as.numeric(voc15),
     voc16 = as.numeric(voc16),
     voc17 = as.numeric(voc17),
-    total = as.numeric(total),
-    # add interaction column for population and treatment
-    pop_treat = interaction(population, treatment, sep = "_")
+    total = as.numeric(total)
   )
