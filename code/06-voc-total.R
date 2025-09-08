@@ -16,7 +16,7 @@ voc_total <- df %>%
     n,
     total
   ) %>%
-  na.omit() # remove rows with NA values for VOCs
+  drop_na() # remove rows with NA values for VOCs
 
 # explore data and fit model ---------------------------------------------
 
@@ -176,7 +176,7 @@ p_voc_total <-
   scale_fill_manual(values = pal_treat, name = "Treatment") +
 
   # labels and theme
-  labs(x = "Population", y = "Total VOC emmisions (ng)") +
+  labs(x = "Population", y = "Total VOC emmisions (ng/h)") +
   theme(
     panel.grid.major.x = element_blank(),
     # legend.background = element_rect(
@@ -275,7 +275,7 @@ p_voc_total_boxplot <-
   scale_fill_manual(values = pal_treat, name = "Treatment") +
 
   # labels and theme
-  labs(x = "Population", y = "Total VOC emmisions (ng)") +
+  labs(x = "Population", y = "Total VOC emmisions (ng/h)") +
   theme(
     panel.grid.major.x = element_blank(),
     # legend.background = element_rect(
