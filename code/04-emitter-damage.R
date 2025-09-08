@@ -177,7 +177,7 @@ stars_emitter_damage <- data.frame(
     ifelse(
       pvalue_emitter_damage < 0.01,
       "**",
-      ifelse(pvalue_emitter_damage < 0.05, "*", "ns")
+      ifelse(pvalue_emitter_damage < 0.05, "*", "")
     )
   )
 )
@@ -264,7 +264,7 @@ stars_emitter_damage <- data.frame(
     ifelse(
       pvalue_emitter_damage < 0.01,
       "**",
-      ifelse(pvalue_emitter_damage < 0.05, "*", "ns")
+      ifelse(pvalue_emitter_damage < 0.05, "*", "")
     )
   )
 )

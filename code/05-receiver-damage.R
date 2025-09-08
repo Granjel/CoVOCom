@@ -25,7 +25,7 @@ receiver_damage <- df %>%
 # hist(receiver_damage$herbivory_receiver) # untransformed data
 # hist(sqrt(receiver_damage$herbivory_receiver)) # square root transformation
 
-# GLMM of damage on receivers
+# LMM of damage on receivers
 glmm_receiver_damage <- lmer(
   # interaction between treatment and population and random intercept for genotype nested within population
   sqrt(herbivory_receiver) ~ treatment * population + (1 | population:genotype),
@@ -196,7 +196,7 @@ stars_receiver_damage <- receiver_damage %>%
       pvalue_receiver_damage < 0.001 ~ "***",
       pvalue_receiver_damage < 0.01 ~ "**",
       pvalue_receiver_damage < 0.05 ~ "*",
-      TRUE ~ "ns"
+      TRUE ~ ""
     )
   )
 
@@ -289,7 +289,7 @@ stars_receiver_damage <- receiver_damage %>%
       pvalue_receiver_damage < 0.001 ~ "***",
       pvalue_receiver_damage < 0.01 ~ "**",
       pvalue_receiver_damage < 0.05 ~ "*",
-      TRUE ~ "ns"
+      TRUE ~ ""
     )
   )
 
