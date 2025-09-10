@@ -2,7 +2,7 @@
 
 # load packages and data -------------------------------------------------
 
-# load packages
+# load
 source("code/03-load-data.R")
 
 # select only relevant data
@@ -16,36 +16,32 @@ vocs <- df %>%
     n,
     dplyr::starts_with("voc")
   ) %>%
-  # replace NA with 0
-  dplyr::mutate(across(starts_with("voc"), ~ replace_na(., 0)))
+  # add interaction between population and genotype for Permanova
+  mutate(pop_gen = interaction(population, genotype, sep = "_")) %>%
+  # remove NAs
+  drop_na()
 
-# define names of VOCs
-voc_names <-
-  data.frame(
-    id = paste0("voc", 1:17),
-    compound = c(
-      "2-butenal, 2-methyl-, (E)-",
-      "alpha-pinene",
-      "beta-pinene",
-      "2-heptanone, 5-methyl",
-      "5-hepten-2-one, 6-methyl-",
-      "butanoic acid, butyl ester",
-      "1-hexanol, 2-ethyl-",
-      "acetophenone",
-      "nonanal",
-      "cis-2-nonenal",
-      "dodecane",
-      "decanal",
-      "tridecane",
-      "tetradecane",
-      "dodecanal",
-      "trans-geranylaceone",
-      "tetradecanal"
-    )
-  )
-
-write.csv(
-  voc_names,
-  "data/voc-names.csv",
-  row.names = FALSE
+# calculate bray curtis distances for the VOC compounds
+compounds_bray <- vegan::vegdist(
+  (vocs %>% dplyr::select(voc1:voc17)),
+  method = "bray"
 )
+
+
+# Permanova --------------------------------------------------------------
+
+# run Permanova
+vocs_permanova <- vegan::adonis2(
+  formula = compounds_bray ~ treatment * population,
+  data = vocs,
+  permutations = 10000,
+  strata = vocs$pop_gen,
+  by = "terms"
+)
+
+# create table with Permanova ouput...
+vocs_permanova_table <- as.data.frame(vocs_permanova) %>%
+  rownames_to_column(var = "factor")
+
+# ...and save it
+write.csv(vocs_permanova_table, "tables/permanova-vocs.csv", row.names = FALSE)
