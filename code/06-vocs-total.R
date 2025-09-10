@@ -1,12 +1,12 @@
-# total VOC emissions
+# total VOCs emissions
 
 # load packages and data -------------------------------------------------
 
-# load packages
+# load
 source("code/03-load-data.R")
 
 # select only relevant data
-voc_total <- df %>%
+vocs_total <- df %>%
   dplyr::select(
     # select relevant columns
     code,
@@ -21,23 +21,23 @@ voc_total <- df %>%
 # explore data and fit model ---------------------------------------------
 
 # data exploration
-# hist(voc_total$total) # untransformed data
-# hist(sqrt(voc_total$total)) # square root transformation
-# hist(log(voc_total$total)) # log transformation
+# hist(vocs_total$total) # untransformed data
+# hist(sqrt(vocs_total$total)) # square root transformation
+# hist(log(vocs_total$total)) # log transformation
 
-# GLMM of total VOC emissions
-glm_voc_total <- glmmTMB(
+# GLMM of total VOCs emissions
+glm_vocs_total <- glmmTMB(
   total ~ treatment * population + (1 | population:genotype),
-  data = voc_total,
+  data = vocs_total,
   family = Gamma(link = "log")
 )
 
 # model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glm_voc_total, plot = TRUE)
+# simulateResiduals(fittedModel = glm_vocs_total, plot = TRUE)
 
 # estimated marginal means (EMMs) for population
 # emmeans(
-#   glm_voc_total,
+#   glm_vocs_total,
 #   pairwise ~ population,
 #   adjustSigma = TRUE,
 #   adjust = "tukey",
@@ -45,9 +45,9 @@ glm_voc_total <- glmmTMB(
 # ) # no significant differences between populations
 
 # estimated marginal means (EMMs) for treatment within population
-emm_voc_total <-
+emm_vocs_total <-
   emmeans(
-    glm_voc_total,
+    glm_vocs_total,
     pairwise ~ treatment | population,
     adjustSigma = TRUE,
     adjust = "tukey",
@@ -56,23 +56,23 @@ emm_voc_total <-
 
 # save EMMs to a CSV file
 write.csv(
-  as.data.frame(emm_voc_total$emmeans),
-  "tables/emm_voc_total-emmeans.csv",
+  as.data.frame(emm_vocs_total$emmeans),
+  "tables/emm_vocs_total-emmeans.csv",
   row.names = FALSE
 )
 
 # save pairwise contrasts to a CSV file
 write.csv(
-  as.data.frame(emm_voc_total$contrasts),
-  "tables/emm_voc_total-contrasts.csv",
+  as.data.frame(emm_vocs_total$contrasts),
+  "tables/emm_vocs_total-contrasts.csv",
   row.names = FALSE
 )
 
 # compact letter display (CLD) for EMMs for treatment within population
-cld_voc_total <- cld(emm_voc_total, Letters = TRUE)
+cld_vocs_total <- cld(emm_vocs_total, Letters = TRUE)
 
 # p-values for pairwise comparisons
-pvalue_voc_total <- summary(emm_voc_total$contrasts)$p.value
+pvalue_vocs_total <- summary(emm_vocs_total$contrasts)$p.value
 
 # plot -------------------------------------------------------------------
 
@@ -86,9 +86,9 @@ mean_size <- 2.5 # size of mean point
 star_size <- 5 # size of significance stars
 
 # plot herbivory on receiver plants
-p_voc_total <-
+p_vocs_total <-
   ggplot(
-    voc_total,
+    vocs_total,
     aes(x = population, y = total, fill = treatment)
   ) +
 
@@ -169,14 +169,14 @@ p_voc_total <-
   ) +
 
   # limit y-axis to avoid extreme outliers
-  coord_cartesian(ylim = quantile(voc_total$total, c(0, 0.925))) +
+  coord_cartesian(ylim = quantile(vocs_total$total, c(0, 0.925))) +
 
   # use the same two-color palette for both fill and point color
   scale_color_manual(values = pal_treat, name = "Treatment") +
   scale_fill_manual(values = pal_treat, name = "Treatment") +
 
   # labels and theme
-  labs(x = "Population", y = "Total VOC emmisions (ng/h)") +
+  labs(x = "Population", y = "Total VOCs emmisions (ng/h)") +
   theme(
     panel.grid.major.x = element_blank(),
     # legend.background = element_rect(
@@ -188,25 +188,25 @@ p_voc_total <-
   )
 
 # compute a nice y position per population (just above the tallest value)
-stars_voc_total <- voc_total %>%
+stars_vocs_total <- vocs_total %>%
   dplyr::distinct(population) %>%
   dplyr::mutate(
-    # y = max(voc_total$total) * 1.025,
-    y = quantile(voc_total$total, c(0.925)) * 1.0275,
+    # y = max(vocs_total$total) * 1.025,
+    y = quantile(vocs_total$total, c(0.925)) * 1.0275,
     label = dplyr::case_when(
-      pvalue_voc_total < 0.001 ~ "***",
-      pvalue_voc_total < 0.01 ~ "**",
-      pvalue_voc_total < 0.05 ~ "*",
+      pvalue_vocs_total < 0.001 ~ "***",
+      pvalue_vocs_total < 0.01 ~ "**",
+      pvalue_vocs_total < 0.05 ~ "*",
       TRUE ~ ""
     )
   )
 
 # add to your existing plot object
-p_voc_total <-
-  p_voc_total +
+p_vocs_total <-
+  p_vocs_total +
   # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # a bit of headroom
   geom_text(
-    data = stars_voc_total,
+    data = stars_vocs_total,
     aes(x = population, y = y, label = label),
     inherit.aes = FALSE,
     size = star_size
@@ -215,8 +215,8 @@ p_voc_total <-
 # save plot
 f <- 0.85 # scaling factor for dimensions
 ggsave(
-  plot = p_voc_total,
-  "figures/fig-voc-total.png",
+  plot = p_vocs_total,
+  "figures/fig-vocs-total.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
@@ -232,9 +232,9 @@ mean_size <- 2.5 # size of mean point
 star_size <- 5 # size of significance stars
 
 # plot herbivory on receiver plants
-p_voc_total_boxplot <-
+p_vocs_total_boxplot <-
   ggplot(
-    voc_total,
+    vocs_total,
     aes(x = population, y = total, fill = treatment)
   ) +
 
@@ -269,13 +269,13 @@ p_voc_total_boxplot <-
   ) +
 
   # limit y-axis to avoid extreme outliers
-  coord_cartesian(ylim = quantile(voc_total$total, c(0, 0.925))) +
+  coord_cartesian(ylim = quantile(vocs_total$total, c(0, 0.925))) +
 
   # use the same two-color palette for both fill and point color
   scale_fill_manual(values = pal_treat, name = "Treatment") +
 
   # labels and theme
-  labs(x = "Population", y = "Total VOC emmisions (ng/h)") +
+  labs(x = "Population", y = "Total VOCs emmisions (ng/h)") +
   theme(
     panel.grid.major.x = element_blank(),
     # legend.background = element_rect(
@@ -287,25 +287,25 @@ p_voc_total_boxplot <-
   )
 
 # compute a nice y position per population (just above the tallest value)
-stars_voc_total <- voc_total %>%
+stars_vocs_total <- vocs_total %>%
   dplyr::distinct(population) %>%
   dplyr::mutate(
-    # y = max(voc_total$total, na.rm = TRUE) * 1.025,
-    y = quantile(voc_total$total, c(0.925)) * 1.0275,
+    # y = max(vocs_total$total, na.rm = TRUE) * 1.025,
+    y = quantile(vocs_total$total, c(0.925)) * 1.0275,
     label = dplyr::case_when(
-      pvalue_voc_total < 0.001 ~ "***",
-      pvalue_voc_total < 0.01 ~ "**",
-      pvalue_voc_total < 0.05 ~ "*",
+      pvalue_vocs_total < 0.001 ~ "***",
+      pvalue_vocs_total < 0.01 ~ "**",
+      pvalue_vocs_total < 0.05 ~ "*",
       TRUE ~ ""
     )
   )
 
 # add to your existing plot object
-p_voc_total_boxplot <-
-  p_voc_total_boxplot +
+p_vocs_total_boxplot <-
+  p_vocs_total_boxplot +
   # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # a bit of headroom
   geom_text(
-    data = stars_voc_total,
+    data = stars_vocs_total,
     aes(x = population, y = y, label = label),
     inherit.aes = FALSE,
     size = star_size
@@ -314,8 +314,8 @@ p_voc_total_boxplot <-
 # save plot
 f <- 0.85 # scaling factor for dimensions
 ggsave(
-  plot = p_voc_total_boxplot,
-  "figures/fig-voc-total-boxplot.png",
+  plot = p_vocs_total_boxplot,
+  "figures/fig-vocs-total-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
