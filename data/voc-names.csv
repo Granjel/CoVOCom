@@ -1,18 +1,18 @@
-id,compound,group
-voc1,"2-butenal, 2-methyl-, (E)-",
-voc2,alpha-pinene,
-voc3,beta-pinene,
-voc4,"2-heptanone, 5-methyl",
-voc5,"5-hepten-2-one, 6-methyl-",
-voc6,"butanoic acid, butyl ester",
-voc7,"1-hexanol, 2-ethyl-",
-voc8,acetophenone,
-voc9,nonanal,
-voc10,cis-2-nonenal,
-voc11,dodecane,
-voc12,decanal,
-voc13,tridecane,
-voc14,tetradecane,
-voc15,dodecanal,
-voc16,trans-geranylaceone,
-voc17,tetradecanal,
+"id","compound","type"
+"voc1","(E)-2-Methyl-2-butenal","GLVs"
+"voc2","alpha-Pinene","Terpenes"
+"voc3","beta-Pinene","Terpenes"
+"voc4","5-Methyl-2-heptanone","Ketones"
+"voc5","6-Methyl-5-hepten-2-one","Ketones"
+"voc6","Butanoic acid, butyl ester","Alcohols and esters"
+"voc7","2-Ethyl-1-hexanol","Alcohols and esters"
+"voc8","Acetophenone","Ketones"
+"voc9","Nonanal","GLVs"
+"voc10","cis-2-Nonenal","GLVs"
+"voc11","Dodecane","Long chain alkanes"
+"voc12","Decanal","GLVs"
+"voc13","Tridecane","Long chain alkanes"
+"voc14","Tetradecane","Long chain alkanes"
+"voc15","Dodecanal","GLVs"
+"voc16","trans-Geranylaceone","Terpenes"
+"voc17","Tetradecanal","GLVs"
