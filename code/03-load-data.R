@@ -17,6 +17,7 @@ df <- read.csv(
     # rename population levels
     population = dplyr::recode(population, "B" = "Bon", "C" = "Cai"),
     population = factor(population, levels = c("Bon", "Cai")),
+
     # rename treatment levels
     treatment = dplyr::recode(
       treatment,
@@ -25,18 +26,7 @@ df <- read.csv(
     ),
     treatment = factor(treatment, levels = c("Control", "Herbivore-induced")),
 
-    # variables as factor
-    code = as.factor(code),
-    genotype = as.factor(genotype),
-
-    # variables as numeric
-    n = as.numeric(n),
-    larva_emitter = as.numeric(larva_emitter),
-    size_emitter = as.numeric(size_emitter),
-    herbivory_emitter = as.numeric(herbivory_emitter),
-    larva_receiver = as.numeric(larva_receiver),
-    size_receiver = as.numeric(size_receiver),
-    herbivory_receiver = as.numeric(herbivory_receiver),
+    # VOCs from ng to ng/h
     voc1 = voc1 / 2,
     voc2 = voc2 / 2,
     voc3 = voc3 / 2,
@@ -54,5 +44,38 @@ df <- read.csv(
     voc15 = voc15 / 2,
     voc16 = voc16 / 2,
     voc17 = voc17 / 2,
-    total = rowSums(across(voc1:voc17)) # total VOC emissions
+
+    # calculate total VOC emissions
+    total = rowSums(across(voc1:voc17)),
+
+    # variables as factor
+    code = as.factor(code),
+    genotype = as.factor(genotype),
+
+    # variables as numeric
+    n = as.numeric(n),
+    larva_emitter = as.numeric(larva_emitter),
+    size_emitter = as.numeric(size_emitter),
+    herbivory_emitter = as.numeric(herbivory_emitter),
+    larva_receiver = as.numeric(larva_receiver),
+    size_receiver = as.numeric(size_receiver),
+    herbivory_receiver = as.numeric(herbivory_receiver),
+    voc1 = as.numeric(voc1),
+    voc2 = as.numeric(voc2),
+    voc3 = as.numeric(voc3),
+    voc4 = as.numeric(voc4),
+    voc5 = as.numeric(voc5),
+    voc6 = as.numeric(voc6),
+    voc7 = as.numeric(voc7),
+    voc8 = as.numeric(voc8),
+    voc9 = as.numeric(voc9),
+    voc10 = as.numeric(voc10),
+    voc11 = as.numeric(voc11),
+    voc12 = as.numeric(voc12),
+    voc13 = as.numeric(voc13),
+    voc14 = as.numeric(voc14),
+    voc15 = as.numeric(voc15),
+    voc16 = as.numeric(voc16),
+    voc17 = as.numeric(voc17),
+    total = as.numeric(total)
   )
