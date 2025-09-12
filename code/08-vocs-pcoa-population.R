@@ -43,11 +43,11 @@ envfit_population <- envfit(
 
 # extract centroids for both populations
 centroids_population <- data.frame(
-  x = rownames(envfit_population$factors$centroids),
+  x = gsub("population", "", rownames(envfit_population$factors$centroids)),
   MDS1 = envfit_population$factors$centroids[, 1],
   MDS2 = envfit_population$factors$centroids[, 2]
 ) %>%
-  filter(x == "populationBon" | x == "populationCai")
+  filter(x == "Bon" | x == "Cai")
 
 # extract arrows for VOC compounds
 arrows_population <- data.frame(
@@ -133,6 +133,18 @@ p_pcoa_population <-
     arrow = arrow(length = unit(0.25, "cm")),
     colour = "black",
     size = 0.7,
+  ) +
+
+  # add centroids with colors for populations and different shape than other points
+  geom_point(
+    data = centroids_population,
+    aes(x = MDS1, y = MDS2, color = x, fill = x),
+    shape = 24,
+    size = 3,
+    stroke = 0.55,
+    color = "black",
+    alpha = transparency_pcoa,
+    show.legend = FALSE
   ) +
 
   # add labels with the names of the VOCs well separated from each other and with a white background
