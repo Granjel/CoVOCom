@@ -84,4 +84,9 @@ df <- read.csv(
 vocs_info <- read.csv(
   file = "data/vocs-names.csv",
   header = TRUE
-)
+) %>%
+  # change alpha and beta to unicode greek letters
+  mutate(
+    compound = gsub("alpha", "\u03B1", compound),
+    compound = gsub("beta", "\u03B2", compound),
+  )
