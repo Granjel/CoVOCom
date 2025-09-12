@@ -43,11 +43,11 @@ envfit_treatment <- envfit(
 
 # extract centroids for both treatments
 centroids_treatment <- data.frame(
-  x = rownames(envfit_treatment$factors$centroids),
+  x = gsub("treatment", "", rownames(envfit_treatment$factors$centroids)),
   MDS1 = envfit_treatment$factors$centroids[, 1],
   MDS2 = envfit_treatment$factors$centroids[, 2]
 ) %>%
-  filter(x == "treatmentControl" | x == "treatmentHerbivore-induced")
+  filter(x == "Control" | x == "Herbivore-induced")
 
 # extract arrows for VOC compounds
 arrows_treatment <- data.frame(
@@ -133,6 +133,18 @@ p_pcoa_treatment <-
     arrow = arrow(length = unit(0.25, "cm")),
     colour = "black",
     size = 0.7,
+  ) +
+
+  # add centroids with colors for treatments and different shape than other points
+  geom_point(
+    data = centroids_treatment,
+    aes(x = MDS1, y = MDS2, color = x, fill = x),
+    shape = 24,
+    size = 3,
+    stroke = 0.55,
+    color = "black",
+    alpha = transparency_pcoa,
+    show.legend = FALSE
   ) +
 
   # add labels with the names of the VOCs well separated from each other and with a white background
