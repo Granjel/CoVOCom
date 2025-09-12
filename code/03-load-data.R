@@ -79,3 +79,9 @@ df <- read.csv(
     voc17 = as.numeric(voc17),
     total = as.numeric(total)
   )
+
+# load information about VOCs (compound names and types)
+vocs_info <- read.csv(
+  file = "data/vocs-names.csv",
+  header = TRUE
+)
