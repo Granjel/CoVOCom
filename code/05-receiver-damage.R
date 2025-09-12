@@ -305,7 +305,7 @@ p_damage_receiver_boxplot <-
   )
 
 # save plot
-# f <- 0.85 # scaling factor for dimensions
+f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_damage_receiver_boxplot,
   "figures/fig-receiver-damage-boxplot.png",
