@@ -179,7 +179,7 @@ p_emitter_damage <-
 stars_emitter_damage <- data.frame(
   population = 1.5,
   herbivory_emitter = max(emitter_damage$herbivory_emitter, na.rm = TRUE) *
-    1.025,
+    0.98,
   label = ifelse(
     pvalue_emitter_damage < 0.001,
     "***",
