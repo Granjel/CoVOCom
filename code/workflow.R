@@ -12,3 +12,9 @@ source("code/11-glvs.R")
 source("code/12-ketones.R")
 source("code/13-long-chain-alkanes.R")
 source("code/14-terpenes.R")
+
+# generate all figures for the paper
+# source("code/code-paper-figures/fig1.R")
+# source("code/code-paper-figures/fig2.R")
+# source("code/code-paper-figures/fig3.R")
+# source("code/code-paper-figures/fig4.R")

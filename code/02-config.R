@@ -24,6 +24,8 @@ names(pal_treat) <- c(
   "Control",
   "Herbivore-induced"
 )
+# make "Control" a bit darker so it's more visible in the figures
+pal_treat["Control"] <- colorspace::darken(pal_treat["Control"], amount = 0.05) # 5% darker
 
 # figure dimensions & resolution
 fig_width <- 6.5 # width in inches
