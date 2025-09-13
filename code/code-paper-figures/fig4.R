@@ -15,12 +15,7 @@ p_receiver_damage <- p_receiver_damage +
   )
 
 # compose
-fig4 <- ggarrange(
-  p_receiver_damage,
-  labels = "auto",
-  vjust = 1.15,
-  font.label = list(size = 16, face = "bold")
-)
+fig4 <- p_receiver_damage # no need to arrange, just one panel
 
 # save figure
 ggsave(
