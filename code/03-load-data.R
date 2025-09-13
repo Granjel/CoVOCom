@@ -80,6 +80,8 @@ df <- read.csv(
     total = as.numeric(total)
   )
 
+# VOCs emissions per type -----------------------------------------------
+
 # load information about VOCs (compound names and types)
 vocs_info <- read.csv(
   file = "data/vocs-names.csv",
@@ -90,3 +92,35 @@ vocs_info <- read.csv(
     compound = gsub("alpha", "\u03B1", compound),
     compound = gsub("beta", "\u03B2", compound),
   )
+
+# summarise VOC emissions per type
+vocs_type <- df %>%
+  # keep experimental factors
+  dplyr::select(
+    code,
+    population,
+    genotype,
+    treatment,
+    n,
+    dplyr::starts_with("voc")
+  ) %>%
+
+  # remove rows with any NAs
+  drop_na() %>%
+
+  # reshape to long format: one row per VOC per sample
+  pivot_longer(
+    cols = starts_with("voc"),
+    names_to = "voc_id",
+    values_to = "emission"
+  ) %>%
+
+  # join with VOC type information
+  left_join(vocs_info, by = c("voc_id" = "id")) %>%
+
+  # sum emissions per VOC type and factor combination
+  group_by(code, population, genotype, treatment, n, type) %>%
+  summarise(emission = sum(emission, na.rm = TRUE), .groups = "drop") %>%
+
+  # reshape back to wide format: one column per VOC type
+  pivot_wider(names_from = type, values_from = emission)
