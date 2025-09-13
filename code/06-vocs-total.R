@@ -41,7 +41,7 @@ glmm_vocs_total <- glmmTMB(
 
 # compare GLMM to GLM with likelihood ratio test (LRT)
 anova(glmm_vocs_total, glm_vocs_total) # GLMM is better
-rm(lm_vocs_total) # remove GLM to avoid confusion
+rm(glm_vocs_total) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glm_vocs_total, plot = TRUE)
