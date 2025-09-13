@@ -93,7 +93,7 @@ vocs_info <- read.csv(
     compound = gsub("beta", "\u03B2", compound),
   )
 
-# summarise VOC emissions per type
+# columns of VOC emissions per type
 vocs_type <- df %>%
   # keep experimental factors
   dplyr::select(
@@ -115,12 +115,8 @@ vocs_type <- df %>%
     values_to = "emission"
   ) %>%
 
-  # join with VOC type information
-  left_join(vocs_info, by = c("voc_id" = "id")) %>%
-
-  # sum emissions per VOC type and factor combination
-  group_by(code, population, genotype, treatment, n, type) %>%
-  summarise(emission = sum(emission, na.rm = TRUE), .groups = "drop") %>%
+  # attach type
+  dplyr::left_join(vocs_info, by = c("voc_id" = "id")) %>%
 
   # reshape back to wide format: one column per VOC type
   pivot_wider(names_from = type, values_from = emission)
