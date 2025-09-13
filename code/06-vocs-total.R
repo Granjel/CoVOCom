@@ -176,7 +176,16 @@ p_vocs_total <-
   scale_fill_manual(values = pal_treat, name = "Treatment") +
 
   # labels and theme
-  labs(x = "Population", y = "Total VOCs emmisions (ng/h)") +
+  labs(
+    x = "Population",
+    y = expression(
+      "Total VOCs emissions (" * ng ~
+        h^{
+          -1
+        } *
+          ")"
+    )
+  ) +
   theme(
     panel.grid.major.x = element_blank(),
     # legend.background = element_rect(
@@ -275,7 +284,16 @@ p_vocs_total_boxplot <-
   scale_fill_manual(values = pal_treat, name = "Treatment") +
 
   # labels and theme
-  labs(x = "Population", y = "Total VOCs emmisions (ng/h)") +
+  labs(
+    x = "Population",
+    y = expression(
+      "Total VOCs emissions (" * ng ~
+        h^{
+          -1
+        } *
+          ")"
+    )
+  ) +
   theme(
     panel.grid.major.x = element_blank(),
     # legend.background = element_rect(
