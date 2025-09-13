@@ -213,7 +213,7 @@ p_terpenes <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_terpenes,
-  "figures/fig-terpenes.png",
+  "figures/terpenes.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
@@ -322,7 +322,7 @@ p_terpenes_boxplot <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_terpenes_boxplot,
-  "figures/fig-terpenes-boxplot.png",
+  "figures/terpenes-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi

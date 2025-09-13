@@ -214,7 +214,7 @@ p_glvs <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_glvs,
-  "figures/fig-glvs.png",
+  "figures/glvs.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
@@ -316,7 +316,7 @@ p_glvs_boxplot <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_glvs_boxplot,
-  "figures/fig-glvs-boxplot.png",
+  "figures/glvs-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi

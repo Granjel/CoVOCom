@@ -208,7 +208,7 @@ p_receiver_damage <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_receiver_damage,
-  "figures/fig-receiver-damage.png",
+  "figures/receiver-damage.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
@@ -301,7 +301,7 @@ p_receiver_damage_boxplot <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_receiver_damage_boxplot,
-  "figures/fig-receiver-damage-boxplot.png",
+  "figures/receiver-damage-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi

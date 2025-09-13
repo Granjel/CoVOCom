@@ -204,7 +204,7 @@ p_emitter_damage <- p_emitter_damage +
 f <- 0.75 # scaling factor for dimensions
 ggsave(
   plot = p_emitter_damage,
-  "figures/fig-emitter-damage.png",
+  "figures/emitter-damage.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
@@ -291,7 +291,7 @@ p_emitter_damage_boxplot <- p_emitter_damage_boxplot +
 f <- 0.75 # scaling factor for dimensions
 ggsave(
   plot = p_emitter_damage_boxplot,
-  "figures/fig-emitter-damage-boxplot.png",
+  "figures/emitter-damage-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi

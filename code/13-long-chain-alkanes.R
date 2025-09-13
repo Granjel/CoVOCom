@@ -213,7 +213,7 @@ p_alkanes <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_alkanes,
-  "figures/fig-long-chain-alkanes.png",
+  "figures/long-chain-alkanes.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
@@ -322,7 +322,7 @@ p_alkanes_boxplot <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_alkanes_boxplot,
-  "figures/fig-long-chain-alkanes-boxplot.png",
+  "figures/long-chain-alkanes-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi

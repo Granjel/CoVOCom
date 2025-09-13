@@ -236,7 +236,7 @@ p_vocs_total <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_vocs_total,
-  "figures/fig-vocs-total.png",
+  "figures/vocs-total.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
@@ -344,7 +344,7 @@ p_vocs_total_boxplot <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_vocs_total_boxplot,
-  "figures/fig-vocs-total-boxplot.png",
+  "figures/vocs-total-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi

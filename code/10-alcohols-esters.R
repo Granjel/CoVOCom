@@ -216,7 +216,7 @@ p_alcohols_esters <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_alcohols_esters,
-  "figures/fig-alcohols-esters.png",
+  "figures/alcohols-esters.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
@@ -322,7 +322,7 @@ p_alcohols_esters_boxplot <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_alcohols_esters_boxplot,
-  "figures/fig-alcohols-esters-boxplot.png",
+  "figures/alcohols-esters-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi

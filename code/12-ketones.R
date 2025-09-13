@@ -216,7 +216,7 @@ p_ketones <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_ketones,
-  "figures/fig-ketones.png",
+  "figures/ketones.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
@@ -325,7 +325,7 @@ p_ketones_boxplot <-
 f <- 0.85 # scaling factor for dimensions
 ggsave(
   plot = p_ketones_boxplot,
-  "figures/fig-ketones-boxplot.png",
+  "figures/ketones-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
   dpi = fig_dpi
