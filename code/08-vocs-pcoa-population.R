@@ -70,12 +70,12 @@ arrows_population$x <-
 xlabel <- paste0(
   "MDS1 (",
   round(variance_explained_population[1] * 100, 1),
-  "% of total variation)"
+  "%)"
 )
 ylabel <- paste0(
   "MDS2 (",
   round(variance_explained_population[2] * 100, 1),
-  "% of total variation)"
+  "%)"
 )
 
 # plot -------------------------------------------------------------------
@@ -115,7 +115,7 @@ p_pcoa_population <-
   geom_point(
     aes(fill = population),
     shape = 21,
-    size = 3,
+    size = 2,
     stroke = 0.33,
     color = "black",
     alpha = transparency_pcoa
@@ -155,6 +155,7 @@ p_pcoa_population <-
       y = MDS2 * as.numeric(rsq),
       label = x
     ),
+    size = 3.25,
     alpha = 0.5,
     color = NA,
     label.size = 0,
@@ -169,9 +170,10 @@ p_pcoa_population <-
       y = MDS2 * as.numeric(rsq),
       label = x
     ),
+    size = 3.25,
     color = "black",
     fill = NA,
-    segment.color = NA
+    segment.color = NA,
   ) +
 
   # color palette for populations
@@ -183,9 +185,9 @@ p_pcoa_population <-
     axis.line = element_blank(),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
-    legend.position = c(0.625, 0.95),
+    legend.position = c(0.725, 0.9),
     text = element_text(size = 12),
-    plot.margin = margin(20, 5, 5, 5)
+    plot.margin = margin(5, 5, 5, 5)
   ) +
 
   # add axis labels

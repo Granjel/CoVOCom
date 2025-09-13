@@ -70,12 +70,12 @@ arrows_treatment$x <-
 xlabel <- paste0(
   "MDS1 (",
   round(variance_explained_treatment[1] * 100, 1),
-  "% of total variation)"
+  "%)"
 )
 ylabel <- paste0(
   "MDS2 (",
   round(variance_explained_treatment[2] * 100, 1),
-  "% of total variation)"
+  "%"
 )
 
 # plot -------------------------------------------------------------------
@@ -115,7 +115,7 @@ p_pcoa_treatment <-
   geom_point(
     aes(fill = treatment),
     shape = 21,
-    size = 3,
+    size = 2,
     stroke = 0.33,
     color = "black",
     alpha = transparency_pcoa
@@ -155,6 +155,7 @@ p_pcoa_treatment <-
       y = MDS2 * as.numeric(rsq),
       label = x
     ),
+    size = 3.25,
     alpha = 0.5,
     color = NA,
     label.size = 0,
@@ -169,6 +170,7 @@ p_pcoa_treatment <-
       y = MDS2 * as.numeric(rsq),
       label = x
     ),
+    size = 3.25,
     color = "black",
     fill = NA,
     segment.color = NA
