@@ -64,14 +64,14 @@ emm_receiver_damage <-
 # save EMMs to a CSV file
 write.csv(
   as.data.frame(emm_receiver_damage$emmeans),
-  "tables/emm_receiver_damage-emmeans.csv",
+  "tables/emm-receiver-damage-emmeans.csv",
   row.names = FALSE
 )
 
 # save pairwise contrasts to a CSV file
 write.csv(
   as.data.frame(emm_receiver_damage$contrasts),
-  "tables/emm_receiver_damage-contrasts.csv",
+  "tables/emm-receiver-damage-contrasts.csv",
   row.names = FALSE
 )
 

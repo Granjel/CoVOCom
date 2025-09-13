@@ -57,14 +57,14 @@ emm_vocs_total <-
 # save EMMs to a CSV file
 write.csv(
   as.data.frame(emm_vocs_total$emmeans),
-  "tables/emm_vocs_total-emmeans.csv",
+  "tables/emm-vocs-total-emmeans.csv",
   row.names = FALSE
 )
 
 # save pairwise contrasts to a CSV file
 write.csv(
   as.data.frame(emm_vocs_total$contrasts),
-  "tables/emm_vocs_total-contrasts.csv",
+  "tables/emm-vocs-total-contrasts.csv",
   row.names = FALSE
 )
 
