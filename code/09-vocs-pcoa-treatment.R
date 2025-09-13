@@ -75,7 +75,7 @@ xlabel <- paste0(
 ylabel <- paste0(
   "MDS2 (",
   round(variance_explained_treatment[2] * 100, 1),
-  "%"
+  "%)"
 )
 
 # plot -------------------------------------------------------------------
