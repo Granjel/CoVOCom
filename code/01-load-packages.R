@@ -26,6 +26,7 @@ pacman::p_load(
   permute, # control for permutation schemes
   lattice, # base plotting system for some model outputs
   reshape, # legacy reshape tools (check if still needed)
+  colorspace, # function to darken colors
   MetBrewer, # colors from painting at the Metropolitan Museum of Art in NY (https://github.com/BlakeRMills/MetBrewer)
   MoMAColors # colors from painting at the Museum of Modern Art in NY (https://github.com/BlakeRMills/MoMAColors)
 )
