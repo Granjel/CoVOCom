@@ -78,14 +78,14 @@ pvalue_receiver_damage <- summary(emm_receiver_damage$contrasts)$p.value
 
 # global plot parameters
 position_boxplot <- 3 # global knob for horizontal dodging; larger = more separation
-transparency_boxplot <- 0.9 # alpha for all layers so overlaps are visible
+transparency_boxplot <- 1 # alpha for all layers so overlaps are visible
 justification_boxplot <- -0.2 * position_boxplot # shifts right half leftwards and left half rightwards
 width_boxplot <- 0.35 # max halfeye width (as a fraction of panel width)
 mean_size <- 2.5 # size of mean point
 star_size <- 7 # size of significance stars
 
 # plot herbivory on receiver plants
-p_damage_receiver <-
+p_receiver_damage <-
   ggplot(
     receiver_damage,
     aes(x = population, y = herbivory_receiver, fill = treatment)
@@ -194,8 +194,8 @@ stars_receiver_damage <- receiver_damage %>%
   )
 
 # add to your existing plot object
-p_damage_receiver <-
-  p_damage_receiver +
+p_receiver_damage <-
+  p_receiver_damage +
   # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # a bit of headroom
   geom_text(
     data = stars_receiver_damage,
@@ -207,7 +207,7 @@ p_damage_receiver <-
 # save plot
 f <- 0.85 # scaling factor for dimensions
 ggsave(
-  plot = p_damage_receiver,
+  plot = p_receiver_damage,
   "figures/fig-receiver-damage.png",
   width = fig_width * f,
   height = fig_height * f,
@@ -218,13 +218,13 @@ ggsave(
 
 # global plot parameters
 position_boxplot <- 0.6 # global knob for horizontal dodging; larger = more separation
-transparency_boxplot <- 0.9 # alpha for all layers so overlaps are visible
+transparency_boxplot <- 1 # alpha for all layers so overlaps are visible
 width_boxplot <- 0.5 # max halfeye width (as a fraction of panel width)
 mean_size <- 2.5 # size of mean point
 star_size <- 7 # size of significance stars
 
 # plot herbivory on receiver plants
-p_damage_receiver_boxplot <-
+p_receiver_damage_boxplot <-
   ggplot(
     receiver_damage,
     aes(x = population, y = herbivory_receiver, fill = treatment)
@@ -287,8 +287,8 @@ stars_receiver_damage <- receiver_damage %>%
   )
 
 # add to your existing plot object
-p_damage_receiver_boxplot <-
-  p_damage_receiver_boxplot +
+p_receiver_damage_boxplot <-
+  p_receiver_damage_boxplot +
   # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # a bit of headroom
   geom_text(
     data = stars_receiver_damage,
@@ -300,7 +300,7 @@ p_damage_receiver_boxplot <-
 # save plot
 f <- 0.85 # scaling factor for dimensions
 ggsave(
-  plot = p_damage_receiver_boxplot,
+  plot = p_receiver_damage_boxplot,
   "figures/fig-receiver-damage-boxplot.png",
   width = fig_width * f,
   height = fig_height * f,
