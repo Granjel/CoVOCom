@@ -12,13 +12,14 @@ source("code/03-load-data.R")
 
 # remove extreme outliers (> 3 SD above mean)
 vocs_glvs <- vocs_type %>%
+  drop_na(GLVs) %>%
   filter(
     GLVs < (mean(GLVs) + 3 * sd(GLVs))
   )
 
 # GLMM of total VOCs emissions
 glm_glvs <- glmmTMB(
-  GLVs ~ treatment * population + (1 | population:genotype),
+  GLVs + 1 ~ treatment * population + (1 | population:genotype),
   data = vocs_glvs,
   family = Gamma(link = "log")
 )
@@ -84,7 +85,7 @@ p_glvs <-
       dodge.width = 0.2 * position_boxplot, # align with box/halfeye offsets
       seed = 1 # reproducible jitter
     ),
-    size = 0.75,
+    size = 0.25,
     alpha = transparency_boxplot
   ) +
 

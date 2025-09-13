@@ -12,9 +12,7 @@ source("code/03-load-data.R")
 
 # remove extreme outliers (> 3 SD above mean)
 vocs_terpenes <- vocs_type %>%
-  filter(
-    Terpenes < (mean(Terpenes) + 3 * sd(Terpenes))
-  )
+  drop_na(Terpenes)
 
 # GLMM of total VOCs emissions
 glm_terpenes <- glmmTMB(
@@ -257,7 +255,7 @@ p_terpenes_boxplot <-
 
   # limit y-axis to avoid extreme outliers
   coord_cartesian(
-    ylim = c(0, quantile(vocs_terpenes$Terpenes, 0.93) * 1.165)
+    ylim = c(0, quantile(vocs_terpenes$Terpenes, 0.93) * 1.025)
   ) +
 
   # use the same two-color palette for both fill and point color

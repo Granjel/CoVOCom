@@ -12,14 +12,11 @@ source("code/03-load-data.R")
 
 # remove extreme outliers (> 3 SD above mean)
 vocs_alkanes <- vocs_type %>%
-  filter(
-    `Long chain alkanes` <
-      (mean(`Long chain alkanes`) + 3 * sd(`Long chain alkanes`))
-  )
+  drop_na(`Long chain alkanes`)
 
 # GLMM of total VOCs emissions
 glm_alkanes <- glmmTMB(
-  `Long chain alkanes` ~ treatment * population + (1 | population:genotype),
+  `Long chain alkanes` + 1 ~ treatment * population + (1 | population:genotype),
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_alkanes,
   family = Gamma(link = "log")
@@ -148,7 +145,7 @@ p_alkanes <-
 
   # zoom in to avoid outliers stretching the y axis
   coord_cartesian(
-    ylim = c(0, quantile(vocs_alkanes$`Long chain alkanes`, 0.93) * 1.15)
+    ylim = c(0, quantile(vocs_alkanes$`Long chain alkanes`, 0.93) * 1.36)
   ) +
 
   # use the same two-color palette for both fill and point color
@@ -180,7 +177,7 @@ p_alkanes <-
 stars_alkanes <- vocs_alkanes %>%
   dplyr::distinct(population) %>%
   dplyr::mutate(
-    y = quantile(vocs_alkanes$`Long chain alkanes`, c(0.925)) * 1.05,
+    y = quantile(vocs_alkanes$`Long chain alkanes`, c(0.925)) * 1.4,
     label = dplyr::case_when(
       pvalue_alkanes < 0.001 ~ "***",
       pvalue_alkanes < 0.01 ~ "**",
@@ -258,7 +255,7 @@ p_alkanes_boxplot <-
 
   # limit y-axis to avoid extreme outliers
   coord_cartesian(
-    ylim = c(0, quantile(vocs_alkanes$`Long chain alkanes`, 0.93) * 1.15)
+    ylim = c(0, quantile(vocs_alkanes$`Long chain alkanes`, 0.93) * 1.36)
   ) +
 
   # use the same two-color palette for both fill and point color
@@ -289,7 +286,7 @@ p_alkanes_boxplot <-
 stars_alkanes <- vocs_alkanes %>%
   dplyr::distinct(population) %>%
   dplyr::mutate(
-    y = quantile(vocs_alkanes$`Long chain alkanes`, c(0.925)) * 1.05,
+    y = quantile(vocs_alkanes$`Long chain alkanes`, c(0.925)) * 1.4,
     label = dplyr::case_when(
       pvalue_alkanes < 0.001 ~ "***",
       pvalue_alkanes < 0.01 ~ "**",

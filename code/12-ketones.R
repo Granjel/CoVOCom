@@ -12,13 +12,14 @@ source("code/03-load-data.R")
 
 # remove extreme outliers (> 3 SD above mean)
 vocs_ketones <- vocs_type %>%
+  drop_na(Ketones) %>%
   filter(
     Ketones < (mean(Ketones) + 3 * sd(Ketones))
   )
 
 # GLMM of total VOCs emissions
 glm_ketones <- glmmTMB(
-  Ketones ~ treatment * population + (1 | population:genotype),
+  Ketones + 1 ~ treatment * population + (1 | population:genotype),
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_ketones,
   family = Gamma(link = "log")
@@ -85,7 +86,7 @@ p_ketones <-
       dodge.width = 0.2 * position_boxplot, # align with box/halfeye offsets
       seed = 1 # reproducible jitter
     ),
-    size = 0.75,
+    size = 0.25,
     alpha = transparency_boxplot
   ) +
 
@@ -147,7 +148,7 @@ p_ketones <-
 
   # zoom in to avoid outliers stretching the y axis
   coord_cartesian(
-    ylim = c(0, quantile(vocs_ketones$Ketones, 0.93) * 1.35)
+    ylim = c(0, quantile(vocs_ketones$Ketones, 0.93) * 1.05)
   ) +
 
   # use the same two-color palette for both fill and point color

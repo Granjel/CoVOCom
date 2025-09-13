@@ -12,10 +12,7 @@ source("code/03-load-data.R")
 
 # remove extreme outliers (> 3 SD above mean)
 vocs_alcohols_esters <- vocs_type %>%
-  filter(
-    `Alcohols and esters` <
-      (mean(`Alcohols and esters`) + 3 * sd(`Alcohols and esters`))
-  )
+  drop_na(`Alcohols and esters`)
 
 # GLMM of total VOCs emissions
 glm_alcohols_esters <- glmmTMB(
@@ -86,7 +83,7 @@ p_alcohols_esters <-
       dodge.width = 0.2 * position_boxplot, # align with box/halfeye offsets
       seed = 1 # reproducible jitter
     ),
-    size = 0.75,
+    size = 0.25,
     alpha = transparency_boxplot
   ) +
 
@@ -144,6 +141,14 @@ p_alcohols_esters <-
   # linear y scale
   scale_y_continuous(
     expand = expansion(mult = c(0, 0.05))
+  ) +
+
+  # zoom in to avoid outliers stretching the y axis
+  coord_cartesian(
+    ylim = c(
+      0,
+      quantile(vocs_alcohols_esters$`Alcohols and esters`, 0.93) * 1.2
+    )
   ) +
 
   # use the same two-color palette for both fill and point color
@@ -243,6 +248,14 @@ p_alcohols_esters_boxplot <-
   # linear y scale
   scale_y_continuous(
     expand = expansion(mult = c(0, 0.05))
+  ) +
+
+  # zoom in to avoid outliers stretching the y axis
+  coord_cartesian(
+    ylim = c(
+      0,
+      quantile(vocs_alcohols_esters$`Alcohols and esters`, 0.93) * 1.225
+    )
   ) +
 
   # use the same two-color palette for both fill and point color
