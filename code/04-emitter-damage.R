@@ -26,21 +26,30 @@ emitter_damage <- df %>%
 # hist(emitter_damage$herbivory_emitter) # untransformed data
 # hist(sqrt(emitter_damage$herbivory_emitter)) # square root transformation
 
-# LMM of damage on emitters
+# LM of damage on emitters (without random effect)
+lm_emitter_damage <- lm(
+  sqrt(herbivory_emitter) ~ population,
+  data = emitter_damage
+)
+
+# LMM of damage on emitters (random intercept for genotype nested within population)
 lmm_emitter_damage <- lmer(
-  # random intercept for genotype nested within population
   sqrt(herbivory_emitter) ~ population + (1 | population:genotype),
   data = emitter_damage
 )
 
-# model diagnostics
-# shapiro.test(resid(lmm_emitter_damage)) # Shapiro-Wilk test for normality of residuals
-# hist(resid(lmm_emitter_damage)) # histogram of residuals
+# compare LMM to LM with likelihood ratio test (LRT)
+# anova(lmm_emitter_damage, lm_emitter_damage) # LM is better
+rm(lmm_emitter_damage) # remove LMM to avoid confusion
 
-# estimated marginal means (EMMs) for population
+# model diagnostics
+# shapiro.test(resid(lm_emitter_damage)) # Shapiro-Wilk test for normality of residuals
+# hist(resid(lm_emitter_damage)) # histogram of residuals
+
+# estimated marginal means (EMMs) for population using LM
 emm_emitter_damage <-
   emmeans(
-    lmm_emitter_damage,
+    lm_emitter_damage,
     pairwise ~ population,
     adjustSigma = TRUE,
     adjust = "tukey",

@@ -25,36 +25,29 @@ receiver_damage <- df %>%
 # hist(receiver_damage$herbivory_receiver) # untransformed data
 # hist(sqrt(receiver_damage$herbivory_receiver)) # square root transformation
 
-# LMM of damage on receivers
-glmm_receiver_damage <- lmer(
-  # interaction between treatment and population and random intercept for genotype nested within population
+# LM of damage on receivers (without random effect)
+lm_receiver_damage <- lm(
+  sqrt(herbivory_receiver) ~ treatment * population,
+  data = receiver_damage
+)
+
+# LMM of damage on receivers (random intercept for genotype nested within population)
+lmm_receiver_damage <- lmer(
   sqrt(herbivory_receiver) ~ treatment * population + (1 | population:genotype),
   data = receiver_damage
 )
 
+# compare LMM to LM with likelihood ratio test (LRT)
+# anova(lmm_receiver_damage, lm_receiver_damage) # LMM is better
+rm(lm_receiver_damage) # remove LM to avoid confusion
+
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glmm_receiver_damage, plot = TRUE)
-
-# alternative: glmmTMB with Tweedie distribution
-# glmm_receiver_damage <- glmmTMB(
-#   sqrt(herbivory_receiver) ~ treatment * population + (1 | population:genotype),
-#   family = glmmTMB::tweedie(link = "log"),
-#   data = receiver_damage
-# )
-
-# estimated marginal means (EMMs) for population
-# emmeans(
-#     glmm_receiver_damage,
-#     pairwise ~ population,
-#     adjustSigma = TRUE,
-#     adjust = "tukey",
-#     type = "response"
-#   ) # no significant differences between populations
 
 # estimated marginal means (EMMs) for treatment within population
 emm_receiver_damage <-
   emmeans(
-    glmm_receiver_damage,
+    lmm_receiver_damage,
     pairwise ~ treatment | population,
     adjustSigma = TRUE,
     adjust = "tukey",

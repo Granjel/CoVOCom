@@ -25,12 +25,23 @@ vocs_total <- df %>%
 # hist(sqrt(vocs_total$total)) # square root transformation
 # hist(log(vocs_total$total)) # log transformation
 
-# GLMM of total VOCs emissions
+# GLM of total VOCs emissions (without random effect)
 glm_vocs_total <- glmmTMB(
+  total ~ treatment * population,
+  data = vocs_total,
+  family = Gamma(link = "log")
+)
+
+# GLMM of total VOCs emissions (random intercept for genotype nested within population)
+glmm_vocs_total <- glmmTMB(
   total ~ treatment * population + (1 | population:genotype),
   data = vocs_total,
   family = Gamma(link = "log")
 )
+
+# compare GLMM to GLM with likelihood ratio test (LRT)
+anova(glmm_vocs_total, glm_vocs_total) # GLMM is better
+rm(lm_vocs_total) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glm_vocs_total, plot = TRUE)
@@ -47,7 +58,7 @@ glm_vocs_total <- glmmTMB(
 # estimated marginal means (EMMs) for treatment within population
 emm_vocs_total <-
   emmeans(
-    glm_vocs_total,
+    glmm_vocs_total,
     pairwise ~ treatment | population,
     adjustSigma = TRUE,
     adjust = "tukey",

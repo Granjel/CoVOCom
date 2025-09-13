@@ -17,12 +17,23 @@ vocs_glvs <- vocs_type %>%
     GLVs < (mean(GLVs) + 3 * sd(GLVs))
   )
 
-# GLMM of total VOCs emissions
+# GLM of GLVs emissions without random effects
 glm_glvs <- glmmTMB(
+  GLVs + 1 ~ treatment * population,
+  data = vocs_glvs,
+  family = Gamma(link = "log")
+)
+
+# GLMM of GLVs emissions (random intercept for genotype nested within population)
+glmm_glvs <- glmmTMB(
   GLVs + 1 ~ treatment * population + (1 | population:genotype),
   data = vocs_glvs,
   family = Gamma(link = "log")
 )
+
+# compare GLMM to GLM with likelihood ratio test (LRT)
+# anova(glmm_glvs, glm_glvs) # GLMM is better
+rm(glm_glvs) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glm_glvs, plot = TRUE)
@@ -30,7 +41,7 @@ glm_glvs <- glmmTMB(
 # estimated marginal means (EMMs) for treatment within population
 emm_glvs <-
   emmeans(
-    glm_glvs,
+    glmm_glvs,
     pairwise ~ treatment | population,
     adjustSigma = TRUE,
     adjust = "tukey",

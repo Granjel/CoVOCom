@@ -14,13 +14,25 @@ source("code/03-load-data.R")
 vocs_alkanes <- vocs_type %>%
   drop_na(`Long chain alkanes`)
 
-# GLMM of total VOCs emissions
+# GLM of long chain alkanes without random effects
 glm_alkanes <- glmmTMB(
+  `Long chain alkanes` + 1 ~ treatment * population,
+  # removed one extreme outliers (> 3 SD above mean)
+  data = vocs_alkanes,
+  family = Gamma(link = "log")
+)
+
+# GLMM of long chain alkanes emissions (random intercept for genotype nested within population)
+glmm_alkanes <- glmmTMB(
   `Long chain alkanes` + 1 ~ treatment * population + (1 | population:genotype),
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_alkanes,
   family = Gamma(link = "log")
 )
+
+# compare GLMM to GLM with likelihood ratio test (LRT)
+# anova(glm_alkanes, glmm_alkanes) # GLMM is better
+rm(glm_alkanes) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glm_alkanes, plot = TRUE)
@@ -28,7 +40,7 @@ glm_alkanes <- glmmTMB(
 # estimated marginal means (EMMs) for treatment within population
 emm_alkanes <-
   emmeans(
-    glm_alkanes,
+    glmm_alkanes,
     pairwise ~ treatment | population,
     adjustSigma = TRUE,
     adjust = "tukey",

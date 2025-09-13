@@ -17,13 +17,25 @@ vocs_ketones <- vocs_type %>%
     Ketones < (mean(Ketones) + 3 * sd(Ketones))
   )
 
-# GLMM of total VOCs emissions
+# GLM of ketones emissions without random effects
 glm_ketones <- glmmTMB(
+  Ketones + 1 ~ treatment * population,
+  # removed one extreme outliers (> 3 SD above mean)
+  data = vocs_ketones,
+  family = Gamma(link = "log")
+)
+
+# GLMM of ketones emissions (random intercept for genotype nested within population)
+glmm_ketones <- glmmTMB(
   Ketones + 1 ~ treatment * population + (1 | population:genotype),
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_ketones,
   family = Gamma(link = "log")
 )
+
+# compare GLMM to GLM with likelihood ratio test (LRT)
+# anova(glm_ketones, glmm_ketones) # GLMM is better
+rm(glm_ketones) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glm_ketones, plot = TRUE)
@@ -31,7 +43,7 @@ glm_ketones <- glmmTMB(
 # estimated marginal means (EMMs) for treatment within population
 emm_ketones <-
   emmeans(
-    glm_ketones,
+    glmm_ketones,
     pairwise ~ treatment | population,
     adjustSigma = TRUE,
     adjust = "tukey",
