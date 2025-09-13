@@ -36,7 +36,7 @@ library(multcompView)
 
 ### cargamos los datos como table
 
-data <- read.csv(file = "VOCdivision.csv", h = T, sep = ";", na.strings = "NA")
+data <- read.csv(file = "lucia/VOCdivision.csv", h = T, sep = ";", na.strings = "NA")
 data
 
 head(data)
@@ -46,9 +46,6 @@ data$Gen <- as.factor(data$Gen)
 data$Treat <- as.factor(data$Treat)
 data$ID = as.factor(data$ID)
 data$population = as.factor(data$population)
-
-data <- read.csv(file = "alkanes.csv", h = T, sep = ";", na.strings = "NA")
-data
 
 n_table <- data %>%
   group_by(Treat, population) %>%
