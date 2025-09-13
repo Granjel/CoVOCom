@@ -78,7 +78,7 @@ transparency_boxplot <- 1 # alpha for all layers so overlaps are visible
 justification_boxplot <- -0.26 * position_boxplot # shifts right half leftwards and left half rightwards
 width_boxplot <- 0.35 # max boxplot width (as a fraction of panel width)
 width_histogram <- 0.3 # max histogram width (as a fraction of panel width)
-mean_size <- 2.5 # size of mean point
+mean_size <- 1.5 # size of mean point
 star_size <- 7 # size of significance stars
 
 # plot Ketones emissions by treatment and population
