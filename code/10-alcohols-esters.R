@@ -70,7 +70,7 @@ pvalue_alcohols_esters <- summary(emm_alcohols_esters$contrasts)$p.value
 
 # global plot parameters
 position_boxplot <- 3 # global knob for horizontal dodging; larger = more separation
-transparency_boxplot <- 0.9 # alpha for all layers so overlaps are visible
+transparency_boxplot <- 1 # alpha for all layers so overlaps are visible
 justification_boxplot <- -0.26 * position_boxplot # shifts right half leftwards and left half rightwards
 width_boxplot <- 0.35 # max boxplot width (as a fraction of panel width)
 width_histogram <- 0.3 # max histogram width (as a fraction of panel width)
@@ -94,7 +94,7 @@ p_alcohols_esters <-
       dodge.width = 0.2 * position_boxplot, # align with box/halfeye offsets
       seed = 1 # reproducible jitter
     ),
-    size = 0.25,
+    size = 0.2,
     alpha = transparency_boxplot
   ) +
 
@@ -170,7 +170,7 @@ p_alcohols_esters <-
   labs(
     x = "Population",
     y = expression(
-      "Alcohols and esters emissions (" * ng ~
+      "Alcohols and esters (" * ng ~
         h^{
           -1
         } *
@@ -226,7 +226,7 @@ ggsave(
 
 # global plot parameters
 position_boxplot <- 0.6 # global knob for horizontal dodging; larger = more separation
-transparency_boxplot <- 0.9 # alpha for all layers so overlaps are visible
+transparency_boxplot <- 1 # alpha for all layers so overlaps are visible
 width_boxplot <- 0.5 # max halfeye width (as a fraction of panel width)
 mean_size <- 2.5 # size of mean point
 star_size <- 5 # size of significance stars
@@ -276,7 +276,7 @@ p_alcohols_esters_boxplot <-
   labs(
     x = "Population",
     y = expression(
-      "Alcohols and esters emissions (" * ng ~
+      "Alcohols and esters (" * ng ~
         h^{
           -1
         } *
