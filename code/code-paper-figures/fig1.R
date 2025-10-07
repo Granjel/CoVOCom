@@ -1,4 +1,4 @@
-# code to generate figure 2 for the paper
+# code to generate figure 1 for the paper
 
 # run workflow? TRUE or FALSE (first time, set to TRUE)
 workflow_run <- FALSE
