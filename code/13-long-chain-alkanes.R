@@ -1,22 +1,22 @@
 # Long chain alkanes emissions by treatment and population
 
 # load packages and data -------------------------------------------------
-
-# load
 source("code/03-load-data.R")
 
-# explore and model "Long chain alkanes" ---------------------------------
+# remove rows with NA in long chain alkanes
+vocs_alkanes <- vocs_type %>%
+  drop_na(`Long chain alkanes`) %>%
+  # add 1 to avoid zeros for Gamma distribution
+  mutate(`Long chain alkanes` = `Long chain alkanes` + 1)
 
 # data exploration
-# hist(vocs_type$`Long chain alkanes`)
+# hist(vocs_type$`Long chain alkanes`) # uncomment to run
 
-# remove extreme outliers (> 3 SD above mean)
-vocs_alkanes <- vocs_type %>%
-  drop_na(`Long chain alkanes`)
+# determine whether to model random effects ------------------------------
 
 # GLM of long chain alkanes without random effects
 glm_alkanes <- glmmTMB(
-  `Long chain alkanes` + 1 ~ treatment * population,
+  `Long chain alkanes` ~ treatment * population,
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_alkanes,
   family = Gamma(link = "log")
@@ -24,25 +24,67 @@ glm_alkanes <- glmmTMB(
 
 # GLMM of long chain alkanes emissions (random intercept for genotype nested within population)
 glmm_alkanes <- glmmTMB(
-  `Long chain alkanes` + 1 ~ treatment * population + (1 | population:genotype),
+  `Long chain alkanes` ~ treatment * population + (1 | population:genotype),
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_alkanes,
   family = Gamma(link = "log")
 )
 
-# compare GLMM to GLM with likelihood ratio test (LRT)
-# anova(glm_alkanes, glmm_alkanes) # GLMM is better
+# compare GLMM to GLM with AIC
+AIC(glm_alkanes, glmm_alkanes) # GLMM is better
 rm(glm_alkanes) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glm_alkanes, plot = TRUE)
+# simulateResiduals(fittedModel = glm_alkanes, plot = TRUE) # uncomment to run
+
+# determine whether to model covariates ----------------------------------
+
+# with covariate larva_emitter
+glmm_alkanes1 <- glmmTMB(
+  `Long chain alkanes` ~
+    treatment * population + larva_emitter + (1 | population:genotype),
+  data = vocs_alkanes,
+  family = Gamma(link = "log")
+)
+
+# with covariate size_emitter
+glmm_alkanes2 <- glmmTMB(
+  `Long chain alkanes` ~
+    treatment * population + size_emitter + (1 | population:genotype),
+  data = vocs_alkanes,
+  family = Gamma(link = "log")
+)
+
+# with covariate larva_emitter and size_emitter
+glmm_alkanes3 <- glmmTMB(
+  `Long chain alkanes` ~
+    treatment *
+    population +
+    larva_emitter +
+    size_emitter +
+    (1 | population:genotype),
+  data = vocs_alkanes,
+  family = Gamma(link = "log")
+)
+
+# compare these models with AIC
+AIC(glmm_alkanes, glmm_alkanes1, glmm_alkanes2, glmm_alkanes3)
+
+# select best model (lowest AIC): model without covariates
+selected_alkanes_model <- glmmTMB(
+  `Long chain alkanes` ~
+    treatment * population + (1 | population:genotype),
+  data = vocs_alkanes,
+  family = Gamma(link = "log")
+)
+
+# inference --------------------------------------------------------------
 
 # estimated marginal means (EMMs) for treatment within population
 emm_alkanes <-
   emmeans(
-    glmm_alkanes,
+    selected_alkanes_model,
     pairwise ~ treatment | population,
-    adjustSigma = TRUE,
     adjust = "tukey",
     type = "response"
   )
@@ -172,7 +214,7 @@ p_alkanes <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
@@ -281,7 +323,7 @@ p_alkanes_boxplot <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
