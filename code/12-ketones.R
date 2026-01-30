@@ -1,51 +1,88 @@
 # Ketones emissions by treatment and population
 
 # load packages and data -------------------------------------------------
-
-# load
 source("code/03-load-data.R")
 
-# explore and model "Ketones" --------------------------------------------
-
-# data exploration
-# hist(vocs_type$Ketones)
-
-# remove extreme outliers (> 3 SD above mean)
+# remove rows with NA in ketones
 vocs_ketones <- vocs_type %>%
   drop_na(Ketones) %>%
-  filter(
-    Ketones < (mean(Ketones) + 3 * sd(Ketones))
-  )
+  # add 1 to avoid zeros for Gamma distribution
+  mutate(Ketones = Ketones + 1)
+
+# data exploration
+# hist(vocs_type$Ketones) # uncomment to run
+
+# remove extreme outliers (> 3 SD above mean)
+vocs_ketones <- vocs_ketones %>%
+  filter(Ketones <= (mean(Ketones) + 3 * sd(Ketones)))
+
+# determine whether to model random effects ------------------------------
 
 # GLM of ketones emissions without random effects
 glm_ketones <- glmmTMB(
-  Ketones + 1 ~ treatment * population,
-  # removed one extreme outliers (> 3 SD above mean)
+  Ketones ~ treatment * population,
   data = vocs_ketones,
   family = Gamma(link = "log")
 )
 
 # GLMM of ketones emissions (random intercept for genotype nested within population)
 glmm_ketones <- glmmTMB(
-  Ketones + 1 ~ treatment * population + (1 | population:genotype),
-  # removed one extreme outliers (> 3 SD above mean)
+  Ketones ~ treatment * population + (1 | population:genotype),
   data = vocs_ketones,
   family = Gamma(link = "log")
 )
 
-# compare GLMM to GLM with likelihood ratio test (LRT)
-# anova(glm_ketones, glmm_ketones) # GLMM is better
+# compare GLMM to GLM with AIC
+AIC(glm_ketones, glmm_ketones) # GLMM is better
 rm(glm_ketones) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glm_ketones, plot = TRUE)
+# simulateResiduals(fittedModel = glm_ketones, plot = TRUE) # uncomment to run
+
+# determine whether to model covariates ----------------------------------
+
+# with covariate larva_emitter
+glmm_ketones1 <- glmmTMB(
+  Ketones ~ treatment * population + larva_emitter + (1 | population:genotype),
+  data = vocs_ketones,
+  family = Gamma(link = "log")
+)
+
+# with covariate size_emitter
+glmm_ketones2 <- glmmTMB(
+  Ketones ~ treatment * population + size_emitter + (1 | population:genotype),
+  data = vocs_ketones,
+  family = Gamma(link = "log")
+)
+
+# with covariates larva_emitter and size_emitter
+glmm_ketones3 <- glmmTMB(
+  Ketones ~ treatment *
+    population +
+    larva_emitter +
+    size_emitter +
+    (1 | population:genotype),
+  data = vocs_ketones,
+  family = Gamma(link = "log")
+)
+
+# compare models with AIC
+AIC(glmm_ketones, glmm_ketones1, glmm_ketones2, glmm_ketones3)
+
+# select best model (lowest AIC): model without covariates
+selected_ketones_model <- glmmTMB(
+  Ketones ~ treatment * population + (1 | population:genotype),
+  data = vocs_ketones,
+  family = Gamma(link = "log")
+)
+
+# inference --------------------------------------------------------------
 
 # estimated marginal means (EMMs) for treatment within population
 emm_ketones <-
   emmeans(
-    glmm_ketones,
+    selected_ketones_model,
     pairwise ~ treatment | population,
-    adjustSigma = TRUE,
     adjust = "tukey",
     type = "response"
   )
@@ -175,7 +212,7 @@ p_ketones <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
@@ -284,7 +321,7 @@ p_ketones_boxplot <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
