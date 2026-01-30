@@ -102,6 +102,8 @@ vocs_type <- df %>%
     genotype,
     treatment,
     n,
+    larva_emitter,
+    size_emitter,
     dplyr::starts_with("voc")
   ) %>%
 
