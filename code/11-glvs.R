@@ -1,49 +1,91 @@
 # GLVs (green leaf volatiles) emissions by treatment and population
 
 # load packages and data -------------------------------------------------
-
-# load
 source("code/03-load-data.R")
 
-# explore and model "GLVs" -----------------------------------------------
-
-# data exploration
-# hist(vocs_type$GLVs)
-
-# remove extreme outliers (> 3 SD above mean)
+# remove rows with NA in GLVs
 vocs_glvs <- vocs_type %>%
   drop_na(GLVs) %>%
-  filter(
-    GLVs < (mean(GLVs) + 3 * sd(GLVs))
-  )
+  # add 1 to avoid zeros for Gamma distribution
+  mutate(GLVs = GLVs + 1)
+
+# data exploration
+# hist(vocs_type$GLVs) # uncomment to run
+
+# remove extreme outliers (> 3 SD above mean)
+vocs_glvs <- vocs_glvs %>% filter(GLVs <= mean(GLVs) + 3 * sd(GLVs))
+
+# determine whether to model random effects ------------------------------
 
 # GLM of GLVs emissions without random effects
 glm_glvs <- glmmTMB(
-  GLVs + 1 ~ treatment * population,
+  GLVs ~ treatment * population,
   data = vocs_glvs,
   family = Gamma(link = "log")
 )
 
 # GLMM of GLVs emissions (random intercept for genotype nested within population)
 glmm_glvs <- glmmTMB(
-  GLVs + 1 ~ treatment * population + (1 | population:genotype),
+  GLVs ~ treatment * population + (1 | population:genotype),
   data = vocs_glvs,
   family = Gamma(link = "log")
 )
 
-# compare GLMM to GLM with likelihood ratio test (LRT)
-# anova(glmm_glvs, glm_glvs) # GLMM is better
+# compare GLMM to GLM with AIC
+AIC(glm_glvs, glmm_glvs) # GLMM is better
 rm(glm_glvs) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glm_glvs, plot = TRUE)
+# simulateResiduals(fittedModel = glm_glvs, plot = TRUE) # uncomment to run
+
+# determine whether to model covariates ----------------------------------
+
+# with covariate larva_emitter
+glmm_glvs1 <- glmmTMB(
+  GLVs ~
+    treatment * population + larva_emitter + (1 | population:genotype),
+  data = vocs_glvs,
+  family = Gamma(link = "log")
+)
+
+# with covariate size_emitter
+glmm_glvs2 <- glmmTMB(
+  GLVs ~
+    treatment * population + size_emitter + (1 | population:genotype),
+  data = vocs_glvs,
+  family = Gamma(link = "log")
+)
+
+# with covariates larva_emitter and size_emitter
+glmm_glvs3 <- glmmTMB(
+  GLVs ~
+    treatment *
+    population +
+    larva_emitter +
+    size_emitter +
+    (1 | population:genotype),
+  data = vocs_glvs,
+  family = Gamma(link = "log")
+)
+
+# compare these models with AIC
+AIC(glmm_glvs, glmm_glvs1, glmm_glvs2, glmm_glvs3)
+
+# select best model (lowest AIC): model without covariates
+selected_glvs_model <- glmmTMB(
+  GLVs ~
+    treatment * population + (1 | population:genotype),
+  data = vocs_glvs,
+  family = Gamma(link = "log")
+)
+
+# inference --------------------------------------------------------------
 
 # estimated marginal means (EMMs) for treatment within population
 emm_glvs <-
   emmeans(
-    glmm_glvs,
+    selected_glvs_model,
     pairwise ~ treatment | population,
-    adjustSigma = TRUE,
     adjust = "tukey",
     type = "response"
   )
@@ -173,7 +215,7 @@ p_glvs <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
@@ -275,7 +317,7 @@ p_glvs_boxplot <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
