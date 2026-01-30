@@ -1,8 +1,6 @@
 # damage on emitters
 
 # load packages and data -------------------------------------------------
-
-# load packages
 source("code/03-load-data.R")
 
 # select only relevant data
@@ -18,13 +16,13 @@ emitter_damage <- df %>%
     size_emitter,
     herbivory_emitter
   ) %>%
-  filter(treatment == "Herbivore-induced") # filter only herbivory treatment
-
-# explore data and fit model ---------------------------------------------
+  filter(treatment == "Herbivore-induced") # we want only the herbivory treatment
 
 # data exploration
-# hist(emitter_damage$herbivory_emitter) # untransformed data
-# hist(sqrt(emitter_damage$herbivory_emitter)) # square root transformation
+# hist(emitter_damage$herbivory_emitter) # untransformed data; uncomment to run
+# hist(sqrt(emitter_damage$herbivory_emitter)) # square root transformation; uncomment to run
+
+# determine whether to model random effects ------------------------------
 
 # LM of damage on emitters (without random effect)
 lm_emitter_damage <- lm(
@@ -35,26 +33,60 @@ lm_emitter_damage <- lm(
 # LMM of damage on emitters (random intercept for genotype nested within population)
 lmm_emitter_damage <- lmer(
   sqrt(herbivory_emitter) ~ population + (1 | population:genotype),
+  data = emitter_damage,
+  REML = FALSE
+)
+
+# compare LMM to LM with AIC
+AIC(lm_emitter_damage, lmm_emitter_damage) # LM is better
+rm(lmm_emitter_damage) # remove LMM to avoid confusion
+
+# model diagnostics with DHARMa
+# simulateResiduals(fittedModel = lm_emitter_damage, plot = TRUE) # uncomment to run
+
+# determine whether to model covariates ----------------------------------
+
+# with covariate larva_emitter
+lm_emitter_damage1 <- lm(
+  sqrt(herbivory_emitter) ~ population + larva_emitter,
   data = emitter_damage
 )
 
-# compare LMM to LM with likelihood ratio test (LRT)
-# anova(lmm_emitter_damage, lm_emitter_damage) # LM is better
-rm(lmm_emitter_damage) # remove LMM to avoid confusion
+# with covariate size_emitter
+lm_emitter_damage2 <- lm(
+  sqrt(herbivory_emitter) ~ population + size_emitter,
+  data = emitter_damage
+)
 
-# model diagnostics
-# shapiro.test(resid(lm_emitter_damage)) # Shapiro-Wilk test for normality of residuals
-# hist(resid(lm_emitter_damage)) # histogram of residuals
+# with covariates larva_emitter and size_emitter
+lm_emitter_damage3 <- lm(
+  sqrt(herbivory_emitter) ~ population + larva_emitter + size_emitter,
+  data = emitter_damage
+)
+
+# compare these models with AIC
+AIC(
+  lm_emitter_damage,
+  lm_emitter_damage1,
+  lm_emitter_damage2,
+  lm_emitter_damage3
+)
+
+# selected best model (lowest AIC): model without covariates
+selected_emitter_damage_model <- lm(
+  sqrt(herbivory_emitter) ~ population,
+  data = emitter_damage
+)
+
+# inference --------------------------------------------------------------
 
 # estimated marginal means (EMMs) for population using LM
-emm_emitter_damage <-
-  emmeans(
-    lm_emitter_damage,
-    pairwise ~ population,
-    adjustSigma = TRUE,
-    adjust = "tukey",
-    type = "response"
-  ) # Bon significantly higher than Cai
+emm_emitter_damage <- emmeans(
+  selected_emitter_damage_model,
+  pairwise ~ population,
+  adjust = "tukey",
+  type = "response"
+) # Bon significantly higher than Cai
 
 # save EMMs to a CSV file
 write.csv(
