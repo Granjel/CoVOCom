@@ -1,8 +1,6 @@
 # damage on receivers
 
 # load packages and data -------------------------------------------------
-
-# load packages
 source("code/03-load-data.R")
 
 # select only relevant data
@@ -19,11 +17,11 @@ receiver_damage <- df %>%
     herbivory_receiver
   )
 
-# explore data and fit model ---------------------------------------------
-
 # data exploration
-# hist(receiver_damage$herbivory_receiver) # untransformed data
-# hist(sqrt(receiver_damage$herbivory_receiver)) # square root transformation
+# hist(receiver_damage$herbivory_receiver) # untransformed data; uncomment to run
+# hist(sqrt(receiver_damage$herbivory_receiver)) # square root transformation; uncomment to run
+
+# determine whether to model random effects ------------------------------
 
 # LM of damage on receivers (without random effect)
 lm_receiver_damage <- lm(
@@ -34,25 +32,77 @@ lm_receiver_damage <- lm(
 # LMM of damage on receivers (random intercept for genotype nested within population)
 lmm_receiver_damage <- lmer(
   sqrt(herbivory_receiver) ~ treatment * population + (1 | population:genotype),
-  data = receiver_damage
+  data = receiver_damage,
+  REML = FALSE # for comparing models
 )
 
-# compare LMM to LM with likelihood ratio test (LRT)
-# anova(lmm_receiver_damage, lm_receiver_damage) # LMM is better
+# compare LMM to LM with AIC
+AIC(lm_receiver_damage, lmm_receiver_damage) # LMM is better
 rm(lm_receiver_damage) # remove LM to avoid confusion
 
 # model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glmm_receiver_damage, plot = TRUE)
+# simulateResiduals(fittedModel = glmm_receiver_damage, plot = TRUE) # uncomment to run
+
+# determine whether to model covariates ----------------------------------
+
+# with covariate larva_receiver
+lmm_receiver_damage1 <- lmer(
+  sqrt(herbivory_receiver) ~ treatment *
+    population +
+    larva_receiver +
+    (1 | population:genotype),
+  data = receiver_damage,
+  REML = FALSE # for comparing models
+)
+
+# with covariate size_receiver
+lmm_receiver_damage2 <- lmer(
+  sqrt(herbivory_receiver) ~ treatment *
+    population +
+    size_receiver +
+    (1 | population:genotype),
+  data = receiver_damage,
+  REML = FALSE # for comparing models
+)
+
+# with covariates larva_receiver and size_receiver
+lmm_receiver_damage3 <- lmer(
+  sqrt(herbivory_receiver) ~ treatment *
+    population +
+    larva_receiver +
+    size_receiver +
+    (1 | population:genotype),
+  data = receiver_damage,
+  REML = FALSE # for comparing models
+)
+
+# compare these models with AIC
+AIC(
+  lmm_receiver_damage,
+  lmm_receiver_damage1,
+  lmm_receiver_damage2,
+  lmm_receiver_damage3
+)
+
+# select best model (lowest AIC): model with larva_receiver as covariate
+selected_receiver_damage_model <- lmer(
+  sqrt(herbivory_receiver) ~ treatment *
+    population +
+    larva_receiver +
+    (1 | population:genotype),
+  data = receiver_damage,
+  REML = TRUE # for inference
+)
+
+# inference --------------------------------------------------------------
 
 # estimated marginal means (EMMs) for treatment within population
-emm_receiver_damage <-
-  emmeans(
-    lmm_receiver_damage,
-    pairwise ~ treatment | population,
-    adjustSigma = TRUE,
-    adjust = "tukey",
-    type = "response"
-  ) # significant differences between treatments within populations
+emm_receiver_damage <- emmeans(
+  selected_receiver_damage_model,
+  pairwise ~ treatment | population,
+  adjust = "tukey",
+  type = "response"
+) # significant differences between treatments within populations
 
 # save EMMs to a CSV file
 write.csv(
