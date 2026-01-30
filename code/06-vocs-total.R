@@ -1,8 +1,6 @@
 # total VOCs emissions
 
 # load packages and data -------------------------------------------------
-
-# load
 source("code/03-load-data.R")
 
 # select only relevant data
@@ -14,16 +12,18 @@ vocs_total <- df %>%
     genotype,
     treatment,
     n,
+    larva_emitter,
+    size_emitter,
     total
   ) %>%
   drop_na() # remove rows with NA values for VOCs
 
-# explore data and fit model ---------------------------------------------
-
 # data exploration
-# hist(vocs_total$total) # untransformed data
-# hist(sqrt(vocs_total$total)) # square root transformation
-# hist(log(vocs_total$total)) # log transformation
+# hist(vocs_total$total) # untransformed data; uncomment to run
+# hist(sqrt(vocs_total$total)) # square root transformation; uncomment to run
+# hist(log(vocs_total$total)) # log transformation; uncomment to run
+
+# determine whether to model random effects ------------------------------
 
 # GLM of total VOCs emissions (without random effect)
 glm_vocs_total <- glmmTMB(
@@ -40,27 +40,61 @@ glmm_vocs_total <- glmmTMB(
 )
 
 # compare GLMM to GLM with likelihood ratio test (LRT)
-anova(glmm_vocs_total, glm_vocs_total) # GLMM is better
+AIC(glm_vocs_total, glmm_vocs_total) # GLMM is better
 rm(glm_vocs_total) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glm_vocs_total, plot = TRUE)
+# simulateResiduals(fittedModel = glmm_vocs_total, plot = TRUE) # uncomment to run
 
-# estimated marginal means (EMMs) for population
-# emmeans(
-#   glm_vocs_total,
-#   pairwise ~ population,
-#   adjustSigma = TRUE,
-#   adjust = "tukey",
-#   type = "response"
-# ) # no significant differences between populations
+# determine whether to model covariates ----------------------------------
+
+# with covariate larva_emitter
+glmm_vocs_total1 <- glmmTMB(
+  total ~ treatment * population + larva_emitter + (1 | population:genotype),
+  data = vocs_total,
+  family = Gamma(link = "log")
+)
+
+# with covariate size_emitter
+glmm_vocs_total2 <- glmmTMB(
+  total ~ treatment * population + size_emitter + (1 | population:genotype),
+  data = vocs_total,
+  family = Gamma(link = "log")
+)
+
+# with covariates larva_emitter and size_emitter
+glmm_vocs_total3 <- glmmTMB(
+  total ~ treatment *
+    population +
+    larva_emitter +
+    size_emitter +
+    (1 | population:genotype),
+  data = vocs_total,
+  family = Gamma(link = "log")
+)
+
+# compare these models with AIC
+AIC(
+  glmm_vocs_total,
+  glmm_vocs_total1,
+  glmm_vocs_total2,
+  glmm_vocs_total3
+)
+
+# select best model (lowest AIC): model without covariates
+selected_vocs_total_model <- glmmTMB(
+  total ~ treatment * population + (1 | population:genotype),
+  data = vocs_total,
+  family = Gamma(link = "log")
+)
+
+# inference --------------------------------------------------------------
 
 # estimated marginal means (EMMs) for treatment within population
 emm_vocs_total <-
   emmeans(
-    glmm_vocs_total,
+    selected_vocs_total_model,
     pairwise ~ treatment | population,
-    adjustSigma = TRUE,
     adjust = "tukey",
     type = "response"
   )
@@ -194,7 +228,7 @@ p_vocs_total <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
@@ -302,7 +336,7 @@ p_vocs_total_boxplot <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
