@@ -1,22 +1,22 @@
 # Terpenes emissions by treatment and population
 
 # load packages and data -------------------------------------------------
-
-# load
 source("code/03-load-data.R")
 
-# explore and model "Terpenes" -------------------------------------------
+# remove rows with NA in terpenes
+vocs_terpenes <- vocs_type %>%
+  drop_na(Terpenes) %>%
+  # add 1 to avoid zeros for Gamma distribution
+  mutate(Terpenes = Terpenes + 1)
 
 # data exploration
-# hist(vocs_type$Terpenes)
+# hist(vocs_type$Terpenes) # uncomment to run
 
-# remove extreme outliers (> 3 SD above mean)
-vocs_terpenes <- vocs_type %>%
-  drop_na(Terpenes)
+# determine whether to model random effects ------------------------------
 
 # GLM of terpenes emissions without random effects
 glm_terpenes <- glmmTMB(
-  Terpenes + 1 ~ treatment * population,
+  Terpenes ~ treatment * population,
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_terpenes,
   family = Gamma(link = "log")
@@ -24,18 +24,62 @@ glm_terpenes <- glmmTMB(
 
 # GLMM of terpenes emissions (random intercept for genotype nested within population)
 glmm_terpenes <- glmmTMB(
-  Terpenes + 1 ~ treatment * population + (1 | population:genotype),
+  Terpenes ~ treatment * population + (1 | population:genotype),
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_terpenes,
   family = Gamma(link = "log")
 )
 
-# compare GLMM to GLM with likelihood ratio test (LRT)
-# anova(glm_terpenes, glmm_terpenes) # GLMM is better
+# compare GLMM to GLM with AIC
+AIC(glm_terpenes, glmm_terpenes) # GLMM is better
 rm(glm_terpenes) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glm_terpenes, plot = TRUE)
+# simulateResiduals(fittedModel = glm_terpenes, plot = TRUE) # uncomment to run
+
+# determine whether to model covariates ----------------------------------
+
+# with covariate larva_emitter
+glmm_terpenes1 <- glmmTMB(
+  Terpenes ~ treatment * population + larva_emitter + (1 | population:genotype),
+  data = vocs_terpenes,
+  family = Gamma(link = "log")
+)
+
+# with covariate size_emitter
+glmm_terpenes2 <- glmmTMB(
+  Terpenes ~ treatment * population + size_emitter + (1 | population:genotype),
+  data = vocs_terpenes,
+  family = Gamma(link = "log")
+)
+
+# with covariates larva_emitter and size_emitter
+glmm_terpenes3 <- glmmTMB(
+  Terpenes ~ treatment *
+    population +
+    larva_emitter +
+    size_emitter +
+    (1 | population:genotype),
+  data = vocs_terpenes,
+  family = Gamma(link = "log")
+)
+
+# compare these models with AIC
+AIC(
+  glmm_terpenes,
+  glmm_terpenes1,
+  glmm_terpenes2,
+  glmm_terpenes3
+)
+
+# select best model (lowest AIC): model without covariates
+selected_terpenes_model <- glmmTMB(
+  Terpenes ~ treatment * population + (1 | population:genotype),
+  data = vocs_terpenes,
+  family = Gamma(link = "log")
+)
+
+# inference --------------------------------------------------------------
 
 # estimated marginal means (EMMs) for treatment within population
 emm_terpenes <-
@@ -172,7 +216,7 @@ p_terpenes <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
@@ -281,7 +325,7 @@ p_terpenes_boxplot <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
