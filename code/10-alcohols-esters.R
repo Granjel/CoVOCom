@@ -1,47 +1,94 @@
 # alcohols and esters emissions by treatment and population
 
 # load packages and data -------------------------------------------------
-
-# load
 source("code/03-load-data.R")
 
-# explore and model "Alcohols and esters" --------------------------------
+# remove rows with NA in alcohols and esters
+vocs_alcohols_esters <- vocs_type %>%
+  drop_na(`Alcohols and esters`) %>%
+  # add 1 to avoid zeros for Gamma distribution
+  mutate(`Alcohols and esters` = `Alcohols and esters` + 1)
 
 # data exploration
-# hist(vocs_type$`Alcohols and esters`)
+# hist(vocs_type$`Alcohols and esters`) # uncomment to run
 
-# remove extreme outliers (> 3 SD above mean)
-vocs_alcohols_esters <- vocs_type %>%
-  drop_na(`Alcohols and esters`)
+# determine whether to model random effects ------------------------------
 
 # GLM of alcohols and esters emissions without random effects
 glm_alcohols_esters <- glmmTMB(
-  `Alcohols and esters` + 1 ~ treatment * population,
+  `Alcohols and esters` ~ treatment * population,
   data = vocs_alcohols_esters,
   family = Gamma(link = "log")
 )
 
 # GLMM of alcohols and esters emissions (random intercept for genotype nested within population)
 glmm_alcohols_esters <- glmmTMB(
-  `Alcohols and esters` + 1 ~
+  `Alcohols and esters` ~
     treatment * population + (1 | population:genotype),
   data = vocs_alcohols_esters,
   family = Gamma(link = "log")
 )
 
-# compare GLMM to GLM with likelihood ratio test (LRT)
-anova(glm_alcohols_esters, glmm_alcohols_esters) # GLMM is better
+# compare GLMM to GLM with AIC
+AIC(glm_alcohols_esters, glmm_alcohols_esters) # GLMM is better
 rm(glm_alcohols_esters) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glm_alcohols_esters, plot = TRUE)
+# simulateResiduals(fittedModel = glm_alcohols_esters, plot = TRUE) # uncomment to run
+
+# determine whether to model covariates ----------------------------------
+
+# with covariate larva_emitter
+glmm_alcohols_esters1 <- glmmTMB(
+  `Alcohols and esters` ~
+    treatment * population + larva_emitter + (1 | population:genotype),
+  data = vocs_alcohols_esters,
+  family = Gamma(link = "log")
+)
+
+# with covariate size_emitter
+glmm_alcohols_esters2 <- glmmTMB(
+  `Alcohols and esters` ~
+    treatment * population + size_emitter + (1 | population:genotype),
+  data = vocs_alcohols_esters,
+  family = Gamma(link = "log")
+)
+
+# with covariates larva_emitter and size_emitter
+glmm_alcohols_esters3 <- glmmTMB(
+  `Alcohols and esters` ~
+    treatment *
+    population +
+    larva_emitter +
+    size_emitter +
+    (1 | population:genotype),
+  data = vocs_alcohols_esters,
+  family = Gamma(link = "log")
+)
+
+# compare these models with AIC
+AIC(
+  glmm_alcohols_esters,
+  glmm_alcohols_esters1,
+  glmm_alcohols_esters2,
+  glmm_alcohols_esters3
+)
+
+# select best model (lowest AIC): model without covariates
+selected_alcohols_esters_model <- glmmTMB(
+  `Alcohols and esters` ~
+    treatment * population + (1 | population:genotype),
+  data = vocs_alcohols_esters,
+  family = Gamma(link = "log")
+)
+
+# inference --------------------------------------------------------------
 
 # estimated marginal means (EMMs) for treatment within population
 emm_alcohols_esters <-
   emmeans(
-    glmm_alcohols_esters,
+    selected_alcohols_esters_model,
     pairwise ~ treatment | population,
-    adjustSigma = TRUE,
     adjust = "tukey",
     type = "response"
   )
@@ -174,7 +221,7 @@ p_alcohols_esters <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
@@ -280,7 +327,7 @@ p_alcohols_esters_boxplot <-
         h^{
           -1
         } *
-          ")"
+        ")"
     )
   ) +
   theme(
