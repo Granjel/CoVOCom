@@ -5,9 +5,19 @@ source("code/03-load-data.R")
 
 # remove rows with NA in long chain alkanes
 vocs_alkanes <- vocs_type %>%
-  drop_na(`Long chain alkanes`) %>%
-  # add 1 to avoid zeros for Gamma distribution
-  mutate(`Long chain alkanes` = `Long chain alkanes` + 1)
+  dplyr::select(
+    code,
+    population,
+    genotype,
+    treatment,
+    n,
+    larva_emitter,
+    size_emitter,
+    voc_id,
+    compound,
+    `Long chain alkanes`
+  ) %>%
+  drop_na(`Long chain alkanes`)
 
 # data exploration
 # hist(vocs_type$`Long chain alkanes`) # uncomment to run
@@ -19,7 +29,7 @@ glm_alkanes <- glmmTMB(
   `Long chain alkanes` ~ treatment * population,
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_alkanes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # GLMM of long chain alkanes emissions (random intercept for genotype nested within population)
@@ -27,16 +37,17 @@ glmm_alkanes <- glmmTMB(
   `Long chain alkanes` ~ treatment * population + (1 | population:genotype),
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_alkanes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare GLMM to GLM with AIC
 AIC(glm_alkanes, glmm_alkanes) # GLMM is better
-rm(glm_alkanes) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glm_alkanes, plot = TRUE) # uncomment to run
 
+# remove GLM to avoid confusion
+rm(glm_alkanes)
 # determine whether to model covariates ----------------------------------
 
 # with covariate larva_emitter
@@ -44,7 +55,7 @@ glmm_alkanes1 <- glmmTMB(
   `Long chain alkanes` ~
     treatment * population + larva_emitter + (1 | population:genotype),
   data = vocs_alkanes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariate size_emitter
@@ -52,7 +63,7 @@ glmm_alkanes2 <- glmmTMB(
   `Long chain alkanes` ~
     treatment * population + size_emitter + (1 | population:genotype),
   data = vocs_alkanes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariate larva_emitter and size_emitter
@@ -64,7 +75,7 @@ glmm_alkanes3 <- glmmTMB(
     size_emitter +
     (1 | population:genotype),
   data = vocs_alkanes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare these models with AIC
@@ -75,7 +86,7 @@ selected_alkanes_model <- glmmTMB(
   `Long chain alkanes` ~
     treatment * population + (1 | population:genotype),
   data = vocs_alkanes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # inference --------------------------------------------------------------
