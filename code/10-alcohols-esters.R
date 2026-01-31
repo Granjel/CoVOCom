@@ -5,9 +5,19 @@ source("code/03-load-data.R")
 
 # remove rows with NA in alcohols and esters
 vocs_alcohols_esters <- vocs_type %>%
-  drop_na(`Alcohols and esters`) %>%
-  # add 1 to avoid zeros for Gamma distribution
-  mutate(`Alcohols and esters` = `Alcohols and esters` + 1)
+  dplyr::select(
+    code,
+    population,
+    genotype,
+    treatment,
+    n,
+    larva_emitter,
+    size_emitter,
+    voc_id,
+    compound,
+    `Alcohols and esters`
+  ) %>%
+  drop_na(`Alcohols and esters`)
 
 # data exploration
 # hist(vocs_type$`Alcohols and esters`) # uncomment to run
@@ -18,7 +28,7 @@ vocs_alcohols_esters <- vocs_type %>%
 glm_alcohols_esters <- glmmTMB(
   `Alcohols and esters` ~ treatment * population,
   data = vocs_alcohols_esters,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # GLMM of alcohols and esters emissions (random intercept for genotype nested within population)
@@ -26,15 +36,17 @@ glmm_alcohols_esters <- glmmTMB(
   `Alcohols and esters` ~
     treatment * population + (1 | population:genotype),
   data = vocs_alcohols_esters,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare GLMM to GLM with AIC
 AIC(glm_alcohols_esters, glmm_alcohols_esters) # GLMM is better
-rm(glm_alcohols_esters) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glm_alcohols_esters, plot = TRUE) # uncomment to run
+
+# remove GLM to avoid confusion
+rm(glm_alcohols_esters)
 
 # determine whether to model covariates ----------------------------------
 
@@ -43,7 +55,7 @@ glmm_alcohols_esters1 <- glmmTMB(
   `Alcohols and esters` ~
     treatment * population + larva_emitter + (1 | population:genotype),
   data = vocs_alcohols_esters,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariate size_emitter
@@ -51,7 +63,7 @@ glmm_alcohols_esters2 <- glmmTMB(
   `Alcohols and esters` ~
     treatment * population + size_emitter + (1 | population:genotype),
   data = vocs_alcohols_esters,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariates larva_emitter and size_emitter
@@ -63,7 +75,7 @@ glmm_alcohols_esters3 <- glmmTMB(
     size_emitter +
     (1 | population:genotype),
   data = vocs_alcohols_esters,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare these models with AIC
@@ -79,7 +91,7 @@ selected_alcohols_esters_model <- glmmTMB(
   `Alcohols and esters` ~
     treatment * population + (1 | population:genotype),
   data = vocs_alcohols_esters,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # inference --------------------------------------------------------------
