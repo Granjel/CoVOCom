@@ -38,10 +38,12 @@ lmm_receiver_damage <- lmer(
 
 # compare LMM to LM with AIC
 AIC(lm_receiver_damage, lmm_receiver_damage) # LMM is better
-rm(lm_receiver_damage) # remove LM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glmm_receiver_damage, plot = TRUE) # uncomment to run
+
+# remove LM to avoid confusion
+rm(lm_receiver_damage)
 
 # determine whether to model covariates ----------------------------------
 
