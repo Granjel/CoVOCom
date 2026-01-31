@@ -5,15 +5,22 @@ source("code/03-load-data.R")
 
 # remove rows with NA in GLVs
 vocs_glvs <- vocs_type %>%
-  drop_na(GLVs) %>%
-  # add 1 to avoid zeros for Gamma distribution
-  mutate(GLVs = GLVs + 1)
+  dplyr::select(
+    code,
+    population,
+    genotype,
+    treatment,
+    n,
+    larva_emitter,
+    size_emitter,
+    voc_id,
+    compound,
+    GLVs,
+  ) %>%
+  drop_na(GLVs)
 
 # data exploration
 # hist(vocs_type$GLVs) # uncomment to run
-
-# remove extreme outliers (> 3 SD above mean)
-vocs_glvs <- vocs_glvs %>% filter(GLVs <= mean(GLVs) + 3 * sd(GLVs))
 
 # determine whether to model random effects ------------------------------
 
@@ -21,22 +28,24 @@ vocs_glvs <- vocs_glvs %>% filter(GLVs <= mean(GLVs) + 3 * sd(GLVs))
 glm_glvs <- glmmTMB(
   GLVs ~ treatment * population,
   data = vocs_glvs,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # GLMM of GLVs emissions (random intercept for genotype nested within population)
 glmm_glvs <- glmmTMB(
   GLVs ~ treatment * population + (1 | population:genotype),
   data = vocs_glvs,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare GLMM to GLM with AIC
 AIC(glm_glvs, glmm_glvs) # GLMM is better
-rm(glm_glvs) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glm_glvs, plot = TRUE) # uncomment to run
+
+# remove GLM to avoid confusion
+rm(glm_glvs)
 
 # determine whether to model covariates ----------------------------------
 
@@ -45,7 +54,7 @@ glmm_glvs1 <- glmmTMB(
   GLVs ~
     treatment * population + larva_emitter + (1 | population:genotype),
   data = vocs_glvs,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariate size_emitter
@@ -53,7 +62,7 @@ glmm_glvs2 <- glmmTMB(
   GLVs ~
     treatment * population + size_emitter + (1 | population:genotype),
   data = vocs_glvs,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariates larva_emitter and size_emitter
@@ -65,7 +74,7 @@ glmm_glvs3 <- glmmTMB(
     size_emitter +
     (1 | population:genotype),
   data = vocs_glvs,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare these models with AIC
@@ -76,7 +85,7 @@ selected_glvs_model <- glmmTMB(
   GLVs ~
     treatment * population + (1 | population:genotype),
   data = vocs_glvs,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # inference --------------------------------------------------------------
