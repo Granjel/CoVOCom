@@ -5,16 +5,22 @@ source("code/03-load-data.R")
 
 # remove rows with NA in ketones
 vocs_ketones <- vocs_type %>%
-  drop_na(Ketones) %>%
-  # add 1 to avoid zeros for Gamma distribution
-  mutate(Ketones = Ketones + 1)
+  dplyr::select(
+    code,
+    population,
+    genotype,
+    treatment,
+    n,
+    larva_emitter,
+    size_emitter,
+    voc_id,
+    compound,
+    Ketones
+  ) %>%
+  drop_na(Ketones)
 
 # data exploration
 # hist(vocs_type$Ketones) # uncomment to run
-
-# remove extreme outliers (> 3 SD above mean)
-vocs_ketones <- vocs_ketones %>%
-  filter(Ketones <= (mean(Ketones) + 3 * sd(Ketones)))
 
 # determine whether to model random effects ------------------------------
 
@@ -22,22 +28,24 @@ vocs_ketones <- vocs_ketones %>%
 glm_ketones <- glmmTMB(
   Ketones ~ treatment * population,
   data = vocs_ketones,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # GLMM of ketones emissions (random intercept for genotype nested within population)
 glmm_ketones <- glmmTMB(
   Ketones ~ treatment * population + (1 | population:genotype),
   data = vocs_ketones,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare GLMM to GLM with AIC
 AIC(glm_ketones, glmm_ketones) # GLMM is better
-rm(glm_ketones) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glm_ketones, plot = TRUE) # uncomment to run
+# simulateResiduals(fittedModel = glmm_ketones, plot = TRUE) # uncomment to run
+
+# remove GLM to avoid confusion
+rm(glm_ketones)
 
 # determine whether to model covariates ----------------------------------
 
@@ -45,14 +53,14 @@ rm(glm_ketones) # remove GLM to avoid confusion
 glmm_ketones1 <- glmmTMB(
   Ketones ~ treatment * population + larva_emitter + (1 | population:genotype),
   data = vocs_ketones,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariate size_emitter
 glmm_ketones2 <- glmmTMB(
   Ketones ~ treatment * population + size_emitter + (1 | population:genotype),
   data = vocs_ketones,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariates larva_emitter and size_emitter
@@ -63,7 +71,7 @@ glmm_ketones3 <- glmmTMB(
     size_emitter +
     (1 | population:genotype),
   data = vocs_ketones,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare models with AIC
@@ -73,7 +81,7 @@ AIC(glmm_ketones, glmm_ketones1, glmm_ketones2, glmm_ketones3)
 selected_ketones_model <- glmmTMB(
   Ketones ~ treatment * population + (1 | population:genotype),
   data = vocs_ketones,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # inference --------------------------------------------------------------
