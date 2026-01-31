@@ -39,10 +39,12 @@ lmm_emitter_damage <- lmer(
 
 # compare LMM to LM with AIC
 AIC(lm_emitter_damage, lmm_emitter_damage) # LM is better
-rm(lmm_emitter_damage) # remove LMM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = lm_emitter_damage, plot = TRUE) # uncomment to run
+
+# remove LMM to avoid confusion
+rm(lmm_emitter_damage)
 
 # determine whether to model covariates ----------------------------------
 
