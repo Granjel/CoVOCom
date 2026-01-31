@@ -5,9 +5,19 @@ source("code/03-load-data.R")
 
 # remove rows with NA in terpenes
 vocs_terpenes <- vocs_type %>%
-  drop_na(Terpenes) %>%
-  # add 1 to avoid zeros for Gamma distribution
-  mutate(Terpenes = Terpenes + 1)
+  dplyr::select(
+    code,
+    population,
+    genotype,
+    treatment,
+    n,
+    larva_emitter,
+    size_emitter,
+    voc_id,
+    compound,
+    Terpenes
+  ) %>%
+  drop_na(Terpenes)
 
 # data exploration
 # hist(vocs_type$Terpenes) # uncomment to run
@@ -19,7 +29,7 @@ glm_terpenes <- glmmTMB(
   Terpenes ~ treatment * population,
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_terpenes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # GLMM of terpenes emissions (random intercept for genotype nested within population)
@@ -27,15 +37,17 @@ glmm_terpenes <- glmmTMB(
   Terpenes ~ treatment * population + (1 | population:genotype),
   # removed one extreme outliers (> 3 SD above mean)
   data = vocs_terpenes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare GLMM to GLM with AIC
 AIC(glm_terpenes, glmm_terpenes) # GLMM is better
-rm(glm_terpenes) # remove GLM to avoid confusion
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glm_terpenes, plot = TRUE) # uncomment to run
+
+# remove GLM to avoid confusion
+rm(glm_terpenes)
 
 # determine whether to model covariates ----------------------------------
 
@@ -43,14 +55,14 @@ rm(glm_terpenes) # remove GLM to avoid confusion
 glmm_terpenes1 <- glmmTMB(
   Terpenes ~ treatment * population + larva_emitter + (1 | population:genotype),
   data = vocs_terpenes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariate size_emitter
 glmm_terpenes2 <- glmmTMB(
   Terpenes ~ treatment * population + size_emitter + (1 | population:genotype),
   data = vocs_terpenes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariates larva_emitter and size_emitter
@@ -61,7 +73,7 @@ glmm_terpenes3 <- glmmTMB(
     size_emitter +
     (1 | population:genotype),
   data = vocs_terpenes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare these models with AIC
@@ -76,7 +88,7 @@ AIC(
 selected_terpenes_model <- glmmTMB(
   Terpenes ~ treatment * population + (1 | population:genotype),
   data = vocs_terpenes,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # inference --------------------------------------------------------------
