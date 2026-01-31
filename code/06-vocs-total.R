@@ -25,26 +25,29 @@ vocs_total <- df %>%
 
 # determine whether to model random effects ------------------------------
 
-# GLM of total VOCs emissions (without random effect)
-glm_vocs_total <- glmmTMB(
-  total ~ treatment * population,
-  data = vocs_total,
-  family = Gamma(link = "log")
-)
+# GLM of total VOCs emissions (without random effect) # uncomment to run if needed, but see note below
+# glm_vocs_total <- glmmTMB(
+#   total ~ treatment * population,
+#   data = vocs_total,
+#   family = tweedie(link = "log")
+# )
+# note: tweedie GLM did not converge because of data dispersion; random effects are needed
 
 # GLMM of total VOCs emissions (random intercept for genotype nested within population)
 glmm_vocs_total <- glmmTMB(
   total ~ treatment * population + (1 | population:genotype),
   data = vocs_total,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
-# compare GLMM to GLM with likelihood ratio test (LRT)
-AIC(glm_vocs_total, glmm_vocs_total) # GLMM is better
-rm(glm_vocs_total) # remove GLM to avoid confusion
+# compare GLMM to GLM with likelihood ratio test (LRT) # uncomment to run if needed, but see note below
+# AIC(glm_vocs_total, glmm_vocs_total) # note: no need to test (see above)
 
 # model diagnostics with DHARMa
 # simulateResiduals(fittedModel = glmm_vocs_total, plot = TRUE) # uncomment to run
+
+# remove GLM to avoid confusion # uncomment to run if needed, but see note below
+# rm(glm_vocs_total) # note: nothing to remove since GLM did not converge (see above)
 
 # determine whether to model covariates ----------------------------------
 
@@ -52,14 +55,14 @@ rm(glm_vocs_total) # remove GLM to avoid confusion
 glmm_vocs_total1 <- glmmTMB(
   total ~ treatment * population + larva_emitter + (1 | population:genotype),
   data = vocs_total,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariate size_emitter
 glmm_vocs_total2 <- glmmTMB(
   total ~ treatment * population + size_emitter + (1 | population:genotype),
   data = vocs_total,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # with covariates larva_emitter and size_emitter
@@ -70,7 +73,7 @@ glmm_vocs_total3 <- glmmTMB(
     size_emitter +
     (1 | population:genotype),
   data = vocs_total,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # compare these models with AIC
@@ -85,7 +88,7 @@ AIC(
 selected_vocs_total_model <- glmmTMB(
   total ~ treatment * population + (1 | population:genotype),
   data = vocs_total,
-  family = Gamma(link = "log")
+  family = tweedie(link = "log")
 )
 
 # inference --------------------------------------------------------------
