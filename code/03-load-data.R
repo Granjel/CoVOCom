@@ -7,6 +7,9 @@ source("code/02-config.R")
 
 # data -------------------------------------------------------------------
 
+# define VOCs extraction time (hours)
+extraction_time <- 1.5
+
 # load general data
 df <- read.csv(
   file = "data/arabidopsis.csv",
@@ -27,23 +30,23 @@ df <- read.csv(
     treatment = factor(treatment, levels = c("Control", "Herbivore-induced")),
 
     # VOCs from ng to ng/h
-    voc1 = voc1 / 2,
-    voc2 = voc2 / 2,
-    voc3 = voc3 / 2,
-    voc4 = voc4 / 2,
-    voc5 = voc5 / 2,
-    voc6 = voc6 / 2,
-    voc7 = voc7 / 2,
-    voc8 = voc8 / 2,
-    voc9 = voc9 / 2,
-    voc10 = voc10 / 2,
-    voc11 = voc11 / 2,
-    voc12 = voc12 / 2,
-    voc13 = voc13 / 2,
-    voc14 = voc14 / 2,
-    voc15 = voc15 / 2,
-    voc16 = voc16 / 2,
-    voc17 = voc17 / 2,
+    voc1 = voc1 / extraction_time,
+    voc2 = voc2 / extraction_time,
+    voc3 = voc3 / extraction_time,
+    voc4 = voc4 / extraction_time,
+    voc5 = voc5 / extraction_time,
+    voc6 = voc6 / extraction_time,
+    voc7 = voc7 / extraction_time,
+    voc8 = voc8 / extraction_time,
+    voc9 = voc9 / extraction_time,
+    voc11 = voc11 / extraction_time,
+    voc10 = voc10 / extraction_time,
+    voc12 = voc12 / extraction_time,
+    voc13 = voc13 / extraction_time,
+    voc14 = voc14 / extraction_time,
+    voc15 = voc15 / extraction_time,
+    voc16 = voc16 / extraction_time,
+    voc17 = voc17 / extraction_time,
 
     # calculate total VOC emissions
     total = rowSums(across(voc1:voc17)),
