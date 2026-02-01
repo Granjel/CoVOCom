@@ -185,7 +185,7 @@ p_pcoa_treatment <-
     axis.line = element_blank(),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
-    legend.position = c(0.7, 0.95),
+    legend.position = c(0.8, 0.95),
     # legend.position = "top",
     text = element_text(size = 12),
     plot.margin = margin(20, 5, 5, 5)
