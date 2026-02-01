@@ -1,10 +1,13 @@
 # code to generate figure 2 for the paper
 
-# run workflow? TRUE or FALSE (first time, set to TRUE)
-workflow_run <- FALSE
+# run necessary scripts
+if (!exists("p_emitter_damage", inherits = TRUE)) {
+  source("code/04-emitter-damage.R")
+}
 
-# run config file
-source("code/code-paper-figures/config-paper-figures.R")
+if (!exists("p_pcoa_population", inherits = TRUE)) {
+  source("code/08-vocs-pcoa-population.R")
+}
 
 # figure 2: emitter damage by population ---------------------------------
 
@@ -37,7 +40,7 @@ fig2 <- ggarrange(
 # save figure
 ggsave(
   plot = fig2,
-  "figures/paper-figures/fig2.png",
+  "figures/paper-figures/fig2.jpeg",
   width = 6.75,
   height = 3.75,
   dpi = fig_dpi
