@@ -1,12 +1,11 @@
-# code to generate figure 2 for the paper
+# code to generate figure 4 for the paper
 
-# run workflow? TRUE or FALSE (first time, set to TRUE)
-workflow_run <- FALSE
+# run necessary scripts
+if (!exists("p_receiver_damage", inherits = TRUE)) {
+  source("code/05-receiver-damage.R")
+}
 
-# run config file
-source("code/code-paper-figures/config-paper-figures.R")
-
-# figure 2: emitter damage by population ---------------------------------
+# figure 4: receiver damage by population --------------------------------
 
 # tweak panel a's margin
 p_receiver_damage <- p_receiver_damage +
@@ -20,7 +19,7 @@ fig4 <- p_receiver_damage # no need to arrange, just one panel
 # save figure
 ggsave(
   plot = fig4,
-  "figures/paper-figures/fig4.png",
+  "figures/paper-figures/fig4.jpeg",
   width = 5.25,
   height = 3.75,
   dpi = fig_dpi
