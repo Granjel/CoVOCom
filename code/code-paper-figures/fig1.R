@@ -1,10 +1,7 @@
 # code to generate figure 1 for the paper
 
-# run workflow? TRUE or FALSE (first time, set to TRUE)
-workflow_run <- FALSE
-
-# run config file
-source("code/code-paper-figures/config-paper-figures.R")
+# load necessary scripts
+source("code/03-load-data.R")
 
 # load temperature data for the figure
 temperature <- read.csv("data/climate-populations.csv", header = TRUE) %>%
@@ -171,7 +168,7 @@ p_temp_prec_clu <- ggarrange(
 # save plot
 ggsave(
   plot = p_temp_prec_clu,
-  "figures/paper-figures/fig1.4.jpeg",
+  "figures/paper-figures/fig1.jpeg",
   width = 5,
   height = 7.25,
   dpi = fig_dpi
