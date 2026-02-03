@@ -15,6 +15,7 @@ df <- read.csv(
   file = "data/arabidopsis.csv",
   header = TRUE
 ) %>%
+
   # convert columns to appropriate types
   mutate(
     # rename population levels
@@ -90,6 +91,7 @@ vocs_info <- read.csv(
   file = "data/vocs-names.csv",
   header = TRUE
 ) %>%
+
   # change alpha and beta to unicode greek letters
   mutate(
     compound = gsub("alpha", "\u03B1", compound),
@@ -125,3 +127,27 @@ vocs_type <- df %>%
 
   # reshape back to wide format: one column per VOC type
   pivot_wider(names_from = type, values_from = emission)
+
+# Life-history traits ----------------------------------------------------
+
+# load life-history traits data
+traits <- read.csv(
+  file = "data/traits.csv",
+  header = TRUE
+) %>%
+
+  # genotype as factor
+  mutate(
+    genotype = as.factor(genotype)
+  ) %>%
+
+  # average variables across experiments (e.g. the mean of rosettes1 and rosettes2 creates rosettes)
+  mutate(
+    rosettes = rowMeans(cbind(rosettes1, rosettes2), na.rm = TRUE),
+    adults = rowMeans(cbind(adults1, adults2), na.rm = TRUE),
+    survival = rowMeans(cbind(survival1, survival2), na.rm = TRUE),
+    flower_time = rowMeans(cbind(flower_time1, flower_time2), na.rm = TRUE),
+    fruits = rowMeans(cbind(fruits1, fruits2), na.rm = TRUE),
+    seeds = rowMeans(cbind(seeds1, seeds2), na.rm = TRUE),
+    fitness = rowMeans(cbind(fitness1, fitness2), na.rm = TRUE)
+  )
