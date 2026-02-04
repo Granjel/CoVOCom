@@ -1,5 +1,5 @@
 # main data
-
+#
 # dependencies -----------------------------------------------------------
 
 # load config and packages
@@ -9,6 +9,40 @@ source("code/02-config.R")
 
 # define VOCs extraction time (hours)
 extraction_time <- 1.5
+
+# VOCs emissions per type -----------------------------------------------
+
+# load information about VOCs (compound names and types)
+vocs_info <- read.csv(
+  file = "data/vocs-names.csv",
+  header = TRUE
+) %>%
+
+  # change alpha and beta to unicode greek letters
+  mutate(
+    compound = gsub("alpha", "\u03B1", compound),
+    compound = gsub("beta", "\u03B2", compound),
+  )
+
+# soil (background) data -------------------------------------------------
+
+# load soil samples data
+soils <- read.csv("data/soil-samples.csv", header = TRUE) %>%
+  # transform to ng/h
+  mutate(ng = ng / extraction_time) %>%
+  # rename a couple of things
+  dplyr::rename(id = code, abundance = ng) %>%
+  # add compound names from vocs_info
+  left_join(
+    vocs_info %>%
+      dplyr::select(id, compound),
+    by = "id"
+  ) %>%
+  # relocate compound after id
+  relocate(compound, .after = id)
+
+
+# main experiment --------------------------------------------------------
 
 # load general data
 df <- read.csv(
@@ -84,19 +118,26 @@ df <- read.csv(
     total = as.numeric(total)
   )
 
-# VOCs emissions per type -----------------------------------------------
+# in df, divide each VOC by the mean of the corresponding soil VOCs
+for (i in seq_len(nrow(vocs_info))) {
+  voc_id <- vocs_info$id[i]
 
-# load information about VOCs (compound names and types)
-vocs_info <- read.csv(
-  file = "data/vocs-names.csv",
-  header = TRUE
-) %>%
-
-  # change alpha and beta to unicode greek letters
-  mutate(
-    compound = gsub("alpha", "\u03B1", compound),
-    compound = gsub("beta", "\u03B2", compound),
+  soil_mean <- mean(
+    soils$abundance[soils$id == voc_id],
+    na.rm = TRUE
   )
+
+  # if no blank value exists, treat background as zero
+  if (is.na(soil_mean)) {
+    soil_mean <- 0
+  }
+
+  # always normalize, using epsilon for stability
+  df[[voc_id]] <- df[[voc_id]] / (soil_mean + 0.01)
+}
+
+
+# VOC emissions per type -------------------------------------------------
 
 # columns of VOC emissions per type
 vocs_type <- df %>%
@@ -151,20 +192,3 @@ traits <- read.csv(
     seeds = rowMeans(cbind(seeds1, seeds2), na.rm = TRUE),
     fitness = rowMeans(cbind(fitness1, fitness2), na.rm = TRUE)
   )
-
-# soil (background) data -------------------------------------------------
-
-# load soil samples data
-soils <- read.csv("data/soil-samples.csv", header = TRUE) %>%
-  # transform to ng/h
-  mutate(ng = ng / extraction_time) %>%
-  # rename a couple of things
-  dplyr::rename(id = code, abundance = ng) %>%
-  # add compound names from vocs_info
-  left_join(
-    vocs_info %>%
-      dplyr::select(id, compound),
-    by = "id"
-  ) %>%
-  # relocate compound after id
-  relocate(compound, .after = id)
