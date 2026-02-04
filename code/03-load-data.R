@@ -151,3 +151,12 @@ traits <- read.csv(
     seeds = rowMeans(cbind(seeds1, seeds2), na.rm = TRUE),
     fitness = rowMeans(cbind(fitness1, fitness2), na.rm = TRUE)
   )
+
+# soil (background) data -------------------------------------------------
+
+# load soil samples data
+soils <- read.csv("data/soil-samples.csv", header = TRUE) %>%
+  # transform to ng/h
+  mutate(ng = ng / extraction_time) %>%
+  # rename a couple of things
+  dplyr::rename(id = code, abundance = ng)
