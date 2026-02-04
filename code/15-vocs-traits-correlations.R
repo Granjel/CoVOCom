@@ -1,5 +1,10 @@
 # correlations between VOCs and life history traits
 
+# create dir for traits --------------------------------------------------
+if (!dir.exists("tables/traits-correlations")) {
+  dir.create("tables/traits-correlations")
+}
+
 # load packages and data -------------------------------------------------
 source("code/03-load-data.R")
 
@@ -91,6 +96,13 @@ summary_cor_results <- cor_results %>%
   ) %>%
   arrange(-n_significant)
 
+# export summary table
+write.csv(
+  summary_cor_results,
+  "tables/traits-correlations/summary-vocs-traits-correlations.csv",
+  row.names = FALSE
+)
+
 # filter by traits of interest and add stars: * for p < 0.05, ** for p < 0.01, *** for p < 0.001
 cor_results_stars <- cor_results %>%
   mutate(
@@ -104,30 +116,37 @@ cor_results_stars <- cor_results %>%
   ) %>%
   arrange(population, trait, treatment, voc)
 
-# select and export result tables ----------------------------------------
-
-# greenhouse_flower_time and seed
-main_cor_table <- cor_results_stars %>%
-  filter(trait %in% c("greenhouse_flower_time", "seed_germination"))
-
-tab_data <- main_cor_table %>%
-  mutate(
-    cell = sprintf("%.2f %s", r, significance)
-  )
-
-table_wide <- tab_data %>%
-  dplyr::select(population, treatment, voc, trait, cell) %>%
-  unite(col = "col", population, treatment, trait, sep = "_") %>%
-  pivot_wider(names_from = col, values_from = cell)
-
-table_wide <- table_wide %>%
-  mutate(voc = factor(voc, levels = c(paste0("voc", 1:17), "total"))) %>%
-  arrange(voc)
-
+# export full correlations table
 write.csv(
-  table_wide,
-  "tables/vocs-traits-correlations-main.csv",
+  cor_results_stars,
+  "tables/traits-correlations/full-vocs-traits-correlations.csv",
   row.names = FALSE
 )
 
-# do the same for all the other traits with at least one significant correlation
+# select and export result tables ----------------------------------------
+
+# select traits with at least some significant correlations
+main_traits <- summary_cor_results %>%
+  filter(n_significant > 0) %>%
+  dplyr::pull(trait) %>%
+  unique()
+
+# export tables for each main trait
+for (tname in main_traits) {
+  cor_trait <- cor_results_stars %>%
+    filter(trait == tname) %>%
+    mutate(cell = sprintf("%.2f %s", r, significance)) %>%
+    dplyr::select(population, treatment, voc, trait, cell) %>%
+    unite(col = "col", population, treatment, sep = "_") %>%
+    pivot_wider(names_from = col, values_from = cell) %>%
+    mutate(voc = factor(voc, levels = c(paste0("voc", 1:17), "total"))) %>%
+    dplyr::select(-trait) %>%
+    arrange(voc)
+
+  # export to CSV
+  fname <- file.path(
+    "tables/traits-correlations",
+    paste0("vocs-traits-correlations-", tname, ".csv")
+  )
+  write.csv(cor_trait, fname, row.names = FALSE)
+}
