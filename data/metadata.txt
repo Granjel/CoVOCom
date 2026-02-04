@@ -20,7 +20,7 @@ size_receiver --- size of the receiver Arabidopsis plant on a qualitative scale:
 
 herbivory_receiver --- herbivory damage (percentage) caused by Spodoptera littoralis on receiver plants, calculated visually by comparing before-after pictures (the architecture of Arabidopsis makes it difficult to use software)
 
-voc1 --- 2-butenal, 2-methyl-, (E)- (ng)
+voc1 --- 2-butenal, 2-methyl-, (E)- (ng; all VOCs require accounting by the extraction time, 1.5 hours)
 
 voc2 --- alpha-pinene /929 alpha-thujene/966 beta-thujene (ng)
 
