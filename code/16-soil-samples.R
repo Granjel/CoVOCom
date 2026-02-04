@@ -28,7 +28,7 @@ soils_sum <- soils %>%
   arrange(type, id)
 
 # plot: points for mean and error bars for sd; all of the same VOC type grouped together; abundance on x axis
-soils_sum %>%
+soil_blanks <- soils_sum %>%
   group_by(type) %>%
   mutate(max_mean = max(mean_abundance)) %>%
   ungroup() %>%
@@ -58,6 +58,7 @@ soils_sum %>%
 # save the plot
 ggsave(
   "figures/soil-samples-voc-abundance.jpeg",
+  soil_blanks,
   width = 6,
   height = 7
 )
