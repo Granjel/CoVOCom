@@ -159,4 +159,12 @@ soils <- read.csv("data/soil-samples.csv", header = TRUE) %>%
   # transform to ng/h
   mutate(ng = ng / extraction_time) %>%
   # rename a couple of things
-  dplyr::rename(id = code, abundance = ng)
+  dplyr::rename(id = code, abundance = ng) %>%
+  # add compound names from vocs_info
+  left_join(
+    vocs_info %>%
+      dplyr::select(id, compound),
+    by = "id"
+  ) %>%
+  # relocate compound after id
+  relocate(compound, .after = id)
