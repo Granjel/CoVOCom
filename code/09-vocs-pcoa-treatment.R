@@ -2,6 +2,8 @@
 
 # load data and variables ------------------------------------------------
 
+# fix I need to go back to the previous version of code/07-vocs-permanova.R and see what vocs is!
+
 # run permanova script, which loads data and variables
 source("code/07-vocs-permanova.R")
 
