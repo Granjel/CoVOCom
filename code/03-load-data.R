@@ -83,9 +83,6 @@ df <- read.csv(
     voc16 = voc16 / extraction_time,
     voc17 = voc17 / extraction_time,
 
-    # calculate total VOC emissions
-    total = rowSums(across(voc1:voc17)),
-
     # variables as factor
     code = as.factor(code),
     genotype = as.factor(genotype),
@@ -114,11 +111,12 @@ df <- read.csv(
     voc14 = as.numeric(voc14),
     voc15 = as.numeric(voc15),
     voc16 = as.numeric(voc16),
-    voc17 = as.numeric(voc17),
-    total = as.numeric(total)
+    voc17 = as.numeric(voc17)
   )
 
 # in df, divide each VOC by the mean of the corresponding soil VOCs
+epsilon <- 0 # small constant to avoid division by zero; not needed since we have no zero values
+
 for (i in seq_len(nrow(vocs_info))) {
   voc_id <- vocs_info$id[i]
 
@@ -132,9 +130,14 @@ for (i in seq_len(nrow(vocs_info))) {
     soil_mean <- mean(soil_values, na.rm = TRUE)
   }
 
+  print(soil_mean)
+
   # always normalize, using epsilon for stability
-  df[[voc_id]] <- df[[voc_id]] / (soil_mean + 0.01)
+  df[[voc_id]] <- df[[voc_id]] / (soil_mean + epsilon)
 }
+
+# add total VOC emissions (sum of all VOCs) as a new column
+df <- df %>% mutate(total = as.numeric(rowSums(across(voc1:voc17))))
 
 # VOC emissions per type -------------------------------------------------
 
