@@ -132,7 +132,7 @@ p_pcoa_population <-
     ),
     arrow = arrow(length = unit(0.25, "cm")),
     colour = "black",
-    size = 0.7,
+    size = 0.7
   ) +
 
   # add centroids with colors for populations and different shape than other points
@@ -159,7 +159,8 @@ p_pcoa_population <-
     alpha = 0.5,
     color = NA,
     label.size = 0,
-    segment.color = NA
+    segment.color = NA,
+    max.overlaps = Inf
   ) +
 
   # trick to add transparent background but not transparent text!
@@ -174,6 +175,7 @@ p_pcoa_population <-
     color = "black",
     fill = NA,
     segment.color = NA,
+    max.overlaps = Inf
   ) +
 
   # color palette for populations
@@ -196,7 +198,7 @@ p_pcoa_population <-
 # save plot
 f <- 0.9 # scaling factor for dimensions
 ggsave(
-  "figures/pcoa-vocs-population.png",
+  "figures/pcoa-vocs-population-trans.png",
   p_pcoa_population,
   width = fig_width * f,
   height = fig_height * f,

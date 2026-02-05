@@ -159,7 +159,8 @@ p_pcoa_treatment <-
     alpha = 0.5,
     color = NA,
     label.size = 0,
-    segment.color = NA
+    segment.color = NA,
+    max.overlaps = Inf
   ) +
 
   # trick to add transparent background but not transparent text!
@@ -173,7 +174,8 @@ p_pcoa_treatment <-
     size = 3.25,
     color = "black",
     fill = NA,
-    segment.color = NA
+    segment.color = NA,
+    max.overlaps = Inf
   ) +
 
   # color palette for treatments
@@ -197,7 +199,7 @@ p_pcoa_treatment <-
 # save plot
 f <- 0.9 # scaling factor for dimensions
 ggsave(
-  "figures/pcoa-vocs-treatment.png",
+  "figures/pcoa-vocs-treatment-trans.png",
   p_pcoa_treatment,
   width = fig_width * f,
   height = fig_height * f,
