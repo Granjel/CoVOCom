@@ -65,23 +65,7 @@ df <- read.csv(
     treatment = factor(treatment, levels = c("Control", "Herbivore-induced")),
 
     # VOCs from ng to ng/h
-    voc1 = voc1 / extraction_time,
-    voc2 = voc2 / extraction_time,
-    voc3 = voc3 / extraction_time,
-    voc4 = voc4 / extraction_time,
-    voc5 = voc5 / extraction_time,
-    voc6 = voc6 / extraction_time,
-    voc7 = voc7 / extraction_time,
-    voc8 = voc8 / extraction_time,
-    voc9 = voc9 / extraction_time,
-    voc11 = voc11 / extraction_time,
-    voc10 = voc10 / extraction_time,
-    voc12 = voc12 / extraction_time,
-    voc13 = voc13 / extraction_time,
-    voc14 = voc14 / extraction_time,
-    voc15 = voc15 / extraction_time,
-    voc16 = voc16 / extraction_time,
-    voc17 = voc17 / extraction_time,
+    across(starts_with("voc"), ~ .x / extraction_time),
 
     # variables as factor
     code = as.factor(code),
@@ -114,30 +98,65 @@ df <- read.csv(
     voc17 = as.numeric(voc17)
   )
 
-# in df, divide each VOC by the mean of the corresponding soil VOCs
-epsilon <- 0 # small constant to avoid division by zero; not needed since we have no zero values
+# calculate the limit of blanks (lob) for each VOC as the 95% quantile of the abundance values in the soil samples for each compound and type
+soil_lob <- soils %>%
+  dplyr::left_join(
+    vocs_info %>% dplyr::select(id, type),
+    by = "id"
+  ) %>%
+  group_by(id, type, compound) %>%
+  summarise(
+    lob = quantile(abundance, probs = 0.95, na.rm = TRUE),
+    .groups = "drop"
+  )
 
-for (i in seq_len(nrow(vocs_info))) {
-  voc_id <- vocs_info$id[i]
+# take each VOC value in df and, if it is below the lob for that VOC, set it to 0; if it's NA, keep it as NA; if it's above the lob, keep the original value
+df <- df %>%
+  pivot_longer(
+    cols = starts_with("voc"),
+    names_to = "voc_id",
+    values_to = "emission"
+  ) %>%
+  left_join(
+    soil_lob %>% dplyr::select(id, lob),
+    by = c("voc_id" = "id")
+  ) %>%
+  mutate(
+    emission = case_when(
+      is.na(emission) ~ NA_real_,
+      emission < lob ~ 0,
+      TRUE ~ emission
+    )
+  ) %>%
+  dplyr::select(-lob) %>%
+  pivot_wider(names_from = voc_id, values_from = emission)
 
-  # get soil values for this VOC
-  soil_values <- soils$abundance[soils$id == voc_id]
+# # check how many values were set to 0 for each VOC
+# zeros_per_voc <- df %>%
+#   pivot_longer(
+#     cols = starts_with("voc"),
+#     names_to = "voc_id",
+#     values_to = "emission"
+#   ) %>%
+#   group_by(voc_id) %>%
+#   summarise(
+#     zeros = sum(emission == 0, na.rm = TRUE),
+#     total = sum(!is.na(emission)),
+#     percent_zeros = zeros / total * 100,
+#     .groups = "drop"
+#   ) %>%
+#   left_join(
+#     vocs_info %>% dplyr::select(id, compound),
+#     by = c("voc_id" = "id")
+#   ) %>%
+#   arrange(percent_zeros)
 
-  # if no blank value exists or all are NA, treat background as zero
-  if (length(soil_values) == 0 || all(is.na(soil_values))) {
-    soil_mean <- 0
-  } else {
-    soil_mean <- mean(soil_values, na.rm = TRUE)
-  }
-
-  print(soil_mean)
-
-  # always normalize, using epsilon for stability
-  df[[voc_id]] <- df[[voc_id]] / (soil_mean + epsilon)
-}
-
-# add total VOC emissions (sum of all VOCs) as a new column
-df <- df %>% mutate(total = as.numeric(rowSums(across(voc1:voc17))))
+# add a variable, total, that sums the VOCs by row
+df <- df %>%
+  rowwise() %>%
+  mutate(total = sum(c_across(starts_with("voc")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  relocate(total, .after = last_col())
 
 # VOC emissions per type -------------------------------------------------
 
