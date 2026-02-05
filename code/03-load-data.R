@@ -122,20 +122,19 @@ df <- read.csv(
 for (i in seq_len(nrow(vocs_info))) {
   voc_id <- vocs_info$id[i]
 
-  soil_mean <- mean(
-    soils$abundance[soils$id == voc_id],
-    na.rm = TRUE
-  )
+  # get soil values for this VOC
+  soil_values <- soils$abundance[soils$id == voc_id]
 
-  # if no blank value exists, treat background as zero
-  if (is.na(soil_mean)) {
+  # if no blank value exists or all are NA, treat background as zero
+  if (length(soil_values) == 0 || all(is.na(soil_values))) {
     soil_mean <- 0
+  } else {
+    soil_mean <- mean(soil_values, na.rm = TRUE)
   }
 
   # always normalize, using epsilon for stability
   df[[voc_id]] <- df[[voc_id]] / (soil_mean + 0.01)
 }
-
 
 # VOC emissions per type -------------------------------------------------
 
