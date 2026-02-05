@@ -193,3 +193,87 @@ ggsave(
   width = 8,
   height = 10
 )
+
+# lob --------------------------------------------------------------------
+
+# calculate the limit of blanks (lob) for each VOC as the 95% quantile of the abundance values in the soil samples for each compound and type
+soil_lob <- soils %>%
+  group_by(id, type, compound) %>%
+  summarise(
+    lob = quantile(abundance, probs = 0.95, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# create a single summed VOC column and drop the original type columns
+vocs_type_sum <- vocs_type %>%
+  dplyr::mutate(
+    value = rowSums(
+      dplyr::across(`Short-chain oxygenated VOCs`:`Long-chain alkanes`),
+      na.rm = TRUE
+    )
+  ) %>%
+  dplyr::select(-(`Short-chain oxygenated VOCs`:`Long-chain alkanes`))
+
+# add the lob for each VOC to the vocs_type_sum data frame by joining on compound name and create a new column indicating whether the mean abundance is above the lob
+vocs_type_sum <- vocs_type_sum %>%
+  left_join(
+    soil_lob %>%
+      dplyr::select(compound, lob),
+    by = "compound"
+  )
+
+# create a new column indicating if the LOB is greater than the abundance value
+vocs_type_sum <- vocs_type_sum %>%
+  mutate(above_lob = value > lob)
+
+# by compound, calculate the percentage of samples that are above the LOB
+lob_perc <- vocs_type_sum %>%
+  group_by(compound) %>%
+  summarise(
+    percent_above_lob = mean(above_lob, na.rm = TRUE) * 100,
+    .groups = "drop"
+  ) %>%
+  arrange(percent_above_lob)
+
+# check if those are equally distributed across treatment and population
+lob_perc_treatment_population <- vocs_type_sum %>%
+  group_by(compound, treatment, population) %>%
+  summarise(
+    percent_above_lob = mean(above_lob, na.rm = TRUE) * 100,
+    .groups = "drop"
+  )
+
+# plot the percentage of samples above the lob for each compound, colored by compound and faceted by treatment and population
+plot_lob_perc <- lob_perc_treatment_population %>%
+  left_join(
+    vocs_info %>% dplyr::select(compound, type),
+    by = "compound"
+  ) %>%
+  arrange(type, compound) %>%
+  mutate(
+    type = factor(type, levels = sort(unique(type))),
+    compound = factor(compound, levels = rev(unique(compound)))
+  ) %>%
+  ggplot(aes(x = percent_above_lob, y = compound, fill = type)) +
+  geom_col(width = 0.7) +
+  labs(
+    title = "Percentage of samples above the LOB",
+    x = "Percentage of samples above LOB",
+    y = "VOC compound",
+    fill = "VOC type"
+  ) +
+  scale_fill_viridis_d(begin = 0.075, end = 0.95) +
+  scale_x_continuous(expand = expansion(mult = c(0.02, 0.02))) +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_text(face = "bold", size = 12)
+  ) +
+  facet_grid(treatment ~ population)
+
+# save the plot
+ggsave(
+  "figures/percentage-above-lob-by-compound-treatment-population.jpeg",
+  plot_lob_perc,
+  width = 10,
+  height = 6
+)
