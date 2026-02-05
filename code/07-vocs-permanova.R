@@ -1,59 +1,91 @@
 # VOCs Permanova
 
 # load packages and data -------------------------------------------------
-
-# load
 source("code/03-load-data.R")
 
-# select only relevant data
-vocs <- df %>%
-  # select relevant columns
-  dplyr::select(
-    code,
-    population,
-    genotype,
-    treatment,
-    n,
-    dplyr::starts_with("voc")
-  ) %>%
-  # add interaction between population and genotype for Permanova
-  mutate(pop_gen = interaction(population, genotype, sep = "_")) %>%
-  # remove NAs
-  drop_na()
+# create directory for PERMANOVA results
+if (!dir.exists("tables/permanova")) {
+  dir.create("tables/permanova")
+}
 
-# calculate bray curtis distances for the VOC compounds
-compounds_bray <- vegan::vegdist(
-  # subset only the VOCs columns
-  vocs %>% dplyr::select(voc1:voc17),
-  method = "bray"
-)
+# helper to make safe filenames (lowercase, non-alphanumerics -> hyphens, trim edge hyphens)
+safe_name <- function(x) {
+  gsub("(^-|-$)", "", gsub("[^a-z0-9]+", "-", tolower(x)))
+}
 
-# Permanova --------------------------------------------------------------
+# prepare list of types (each VOC type plus an "All" aggregate)
+types <- c(unique(vocs_info$type), "All")
 
-# if `vocs_permanova` already exists in the environment, skip this step
-if (exists("vocs_permanova")) {
-  message("Data loaded; Permanova skipped")
-} else {
-  message("Data loaded; running Permanova...")
+# list to store results for each type
+results <- list()
 
-  # run Permanova
-  vocs_permanova <- vegan::adonis2(
-    formula = compounds_bray ~ treatment * population,
-    data = vocs,
-    permutations = 10000,
-    strata = vocs$pop_gen,
-    by = "terms"
+# perform permanova for each type of VOCs and save results
+for (t in types) {
+  # choose VOC ids for this type (or all ids when t == "All")
+  ids <- if (t == "All") {
+    unique(vocs_info$id)
+  } else {
+    vocs_info %>% filter(type == t) %>% pull(id) %>% unique()
+  }
+  if (length(ids) == 0) {
+    next
+  }
+
+  # subset data for this type of VOCs:
+  # - keep sample metadata and the selected VOC columns
+  # - create a population:genotype strata column for permutations
+  # - drop rows with any NA (just in case, but should be none)
+  # - compute total emission per sample (sum across VOC columns)
+  # - keep only samples with > 0 total emission (otherwise distance matrix will fail)
+  sub <- df %>%
+    dplyr::select(code, population, genotype, treatment, n, all_of(ids)) %>%
+    mutate(pop_gen = interaction(population, genotype, sep = "_")) %>%
+    drop_na() %>%
+    rowwise() %>%
+    mutate(total_emission = sum(c_across(starts_with("voc")), na.rm = TRUE)) %>%
+    ungroup() %>%
+    filter(total_emission > 0)
+
+  # need at least two samples to compute distances / permanova
+  if (nrow(sub) < 2) {
+    next
+  }
+  # ensure we have VOC columns to compute distances
+  if (ncol(dplyr::select(sub, starts_with("voc"))) == 0) {
+    next
+  }
+
+  # compute Bray-Curtis distance matrix on VOC columns
+  dist <- vegan::vegdist(
+    dplyr::select(sub, starts_with("voc")),
+    method = "bray"
   )
 
-  # create table with Permanova ouput...
-  vocs_permanova_table <- as.data.frame(vocs_permanova) %>%
-    rownames_to_column(var = "factor")
+  # run PERMANOVA with treatment, population and their interaction
+  # stratify permutations by pop:genotype to respect group structure
+  res <- vegan::adonis2(
+    dist ~ treatment * population,
+    data = sub,
+    permutations = 10000,
+    strata = sub$pop_gen,
+    by = "terms"
+  ) %>%
+    as.data.frame() %>%
+    tibble::rownames_to_column("factor")
 
-  # ...and save it
+  # save results table for this VOC type
   write.csv(
-    vocs_permanova_table,
-    "tables/permanova-vocs.csv",
+    res,
+    file.path(
+      "tables/permanova",
+      paste0("permanova-vocs-", safe_name(t), ".csv")
+    ),
     row.names = FALSE
   )
-  message("Permanova ran!")
+
+  # store result in list (keyed by type)
+  results[[t]] <- res
 }
+
+# remove temporary objects from workspace
+rm(dist, res, sub, t, ids)
