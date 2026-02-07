@@ -1,7 +1,9 @@
 # VOCs Permanova
 
-# load packages and data -------------------------------------------------
-source("code/03-load-data.R")
+# switch: run only "All" (all VOC types together) by default, or set to TRUE to run all VOC types separately + "All"
+run_all_types <- FALSE
+
+# create dirs for permanova ----------------------------------------------
 
 # create directory for PERMANOVA results
 if (!dir.exists("tables/permanova")) {
@@ -13,13 +15,20 @@ if (!dir.exists("tables/permanova/objects-for-pcoa")) {
   dir.create("tables/permanova/objects-for-pcoa")
 }
 
+# load packages and data -------------------------------------------------
+source("code/03-load-data.R")
+
 # helper to make safe filenames (lowercase, non-alphanumerics -> hyphens, trim edge hyphens)
 safe_name <- function(x) {
   gsub("(^-|-$)", "", gsub("[^a-z0-9]+", "-", tolower(x)))
 }
 
 # prepare list of types (each VOC type plus an "All" aggregate)
-types <- c(unique(vocs_info$type), "All")
+types <- if (isTRUE(run_all_types)) {
+  c(unique(vocs_info$type), "All")
+} else {
+  "All"
+}
 
 # lists to store results for each type
 results <- list()
@@ -111,7 +120,7 @@ saveRDS(
 )
 
 # clean environment completely
-# rm(list = ls())
+rm(list = ls())
 
 # # in df, count how many rows have VOC values that are all zero (i.e., total emission = 0); by treatment and population
 # df %>%
