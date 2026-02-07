@@ -25,55 +25,66 @@ compounds_bray <- as.dist(vocs_objects$distances[[voc_type_key]])
 # use capscale to do PCoA
 vocs_pcoa_treatment <- capscale(
   compounds_bray ~ 1 + Condition(population),
-  data = vocs_subset
+  data = vocs_subset,
+  comm = vocs_subset %>% dplyr::select(starts_with("voc"))
 )
 
-# extract eigenvalues
-eigenvalues_treatment <- eigenvals(vocs_pcoa_treatment)
+# extract eigenvalues from unconstrained axes
+eigenvalues_treatment <- vocs_pcoa_treatment$CA$eig
 
 # proportion of variance explained by each axis
 variance_explained_treatment <-
   eigenvalues_treatment / sum(eigenvalues_treatment)
 
 # site ordination scores for the first two axes
+site_scores <- scores(
+  vocs_pcoa_treatment,
+  scaling = 3,
+  correlation = TRUE
+)$sites
+
+# create a data frame with ordination scores and metadata for plotting
 ordination_scores_treatment <-
   data.frame(
-    id = rownames(vocs_pcoa_treatment$CA$u),
+    id = rownames(site_scores),
     treatment = vocs_subset$treatment,
     plant = vocs_subset$code,
-    MDS1 = site_scores_treatment[, 1],
-    MDS2 = site_scores_treatment[, 2]
+    MDS1 = site_scores[, 1],
+    MDS2 = site_scores[, 2]
   )
 
-# envfit for fitted order arrows
+# envfit for treatment centroids
 envfit_treatment <- envfit(
   vocs_pcoa_treatment,
-  vocs_subset %>% dplyr::select(code, treatment, voc1:voc17)
+  data.frame(treatment = vocs_subset$treatment)
 )
 
-# extract centroids for both treatments
+# extract centroids for treatments
 centroids_treatment <- data.frame(
-  x = gsub("treatment", "", rownames(envfit_treatment$factors$centroids)),
+  x = rownames(envfit_treatment$factors$centroids),
   MDS1 = envfit_treatment$factors$centroids[, 1],
   MDS2 = envfit_treatment$factors$centroids[, 2]
-) %>%
-  filter(x == "Control" | x == "Herbivore-induced")
+)
 
-# extract arrows for VOC compounds
+# envfit for VOC arrows
+envfit_vocs <- envfit(
+  vocs_pcoa_treatment,
+  vocs_subset %>% dplyr::select(starts_with("voc"))
+)
+
+# extract arrows for significant VOC compounds
 arrows_treatment <- data.frame(
-  x = rownames(envfit_treatment$vectors$arrows),
-  MDS1 = envfit_treatment$vectors$arrows[, 1],
-  MDS2 = envfit_treatment$vectors$arrows[, 2],
-  pval = envfit_treatment$vectors$pvals,
-  rsq = envfit_treatment$vectors$r
+  x = rownames(envfit_vocs$vectors$arrows),
+  MDS1 = envfit_vocs$vectors$arrows[, 1],
+  MDS2 = envfit_vocs$vectors$arrows[, 2],
+  pval = envfit_vocs$vectors$pvals,
+  rsq = envfit_vocs$vectors$r
 ) %>%
-  filter(pval <= 0.05, rsq >= 0.6)
+  dplyr::filter(pval <= 0.05, rsq >= 0.6)
 
 # change the names of the compounds
 arrows_treatment$x <-
   vocs_info$compound[match(arrows_treatment$x, vocs_info$id)]
-
-# can roman letters be used in labels? for example: α-Pinene
 
 # define axis labels with variance explained
 xlabel <- paste0(
@@ -141,7 +152,7 @@ p_pcoa_treatment <-
     ),
     arrow = arrow(length = unit(0.25, "cm")),
     colour = "black",
-    size = 0.7
+    size = 0.7,
   ) +
 
   # add centroids with colors for treatments and different shape than other points
@@ -194,7 +205,6 @@ p_pcoa_treatment <-
     axis.line = element_blank(),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
-    # remove axis lines
     legend.position = c(0.15, 0.95),
     # legend.position = "top",
     text = element_text(size = 12),
