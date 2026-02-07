@@ -162,7 +162,6 @@ plot_vocs_experiment <- vocs_sum %>%
     position = position_dodge(width = 0.7)
   ) +
   labs(
-    title = "Transformed: divided by soil VOC blanks",
     x = expression(
       "Abundance (" * ng ~ h^{
         -1
@@ -188,10 +187,10 @@ plot_vocs_experiment <- vocs_sum %>%
 
 # save the plot
 ggsave(
-  "figures/voc-abundance-by-population-and-treatment-transformed.jpeg",
+  "figures/voc-abundance-by-population-and-treatment.jpeg",
   plot_vocs_experiment,
   width = 8,
-  height = 10
+  height = 9.5
 )
 
 # lob --------------------------------------------------------------------
