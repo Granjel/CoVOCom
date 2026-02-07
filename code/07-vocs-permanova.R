@@ -40,11 +40,10 @@ for (t in types) {
     next
   }
 
-  # subset data for this type of VOCs:
+  # subset data for the type of VOCs:
   # - keep sample metadata and the selected VOC columns
   # - create a population:genotype strata column for permutations
-  # - drop rows with any NA (just in case, but should be none)
-  # - compute total emission per sample (sum across VOC columns)
+  # - drop rows with any NA
   # - keep only samples with > 0 total emission (otherwise distance matrix will fail)
   sub <- df %>%
     dplyr::select(code, population, genotype, treatment, n, all_of(ids)) %>%
@@ -74,7 +73,7 @@ for (t in types) {
   )
 
   # store distance matrix for this VOC type
-  distances[[safe_name(t)]] <- as.matrix(dist)
+  distances[[safe_name(t)]] <- dist
 
   # run PERMANOVA with treatment, population and their interaction
   # stratify permutations by pop:genotype to respect group structure
@@ -112,4 +111,14 @@ saveRDS(
 )
 
 # clean environment completely
-rm(list = ls())
+# rm(list = ls())
+
+# # in df, count how many rows have VOC values that are all zero (i.e., total emission = 0); by treatment and population
+# df %>%
+#   drop_na() %>%
+#   rowwise() %>%
+#   mutate(total_emission = sum(c_across(starts_with("voc")), na.rm = TRUE)) %>%
+#   ungroup() %>%
+#   filter(total_emission == 0) %>%
+#   count(treatment, population, genotype) %>%
+#   arrange(treatment, population)
