@@ -25,8 +25,7 @@ compounds_bray <- as.dist(vocs_objects$distances[[voc_type_key]])
 # use capscale to do PCoA
 vocs_pcoa_treatment <- capscale(
   compounds_bray ~ 1 + Condition(population),
-  data = vocs_subset,
-  comm = vocs_subset %>% dplyr::select(starts_with("voc"))
+  data = vocs_subset
 )
 
 # extract eigenvalues from unconstrained axes
