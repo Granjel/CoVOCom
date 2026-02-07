@@ -3,7 +3,12 @@
 # load packages and data -------------------------------------------------
 source("code/03-load-data.R")
 
-# select only relevant data
+# create dir for emms and contrasts --------------------------------------
+if (!dir.exists("tables/emms")) {
+  dir.create("tables/emms")
+}
+
+# select only relevant data ----------------------------------------------
 receiver_damage <- df %>%
   dplyr::select(
     # select relevant columns
@@ -109,14 +114,14 @@ emm_receiver_damage <- emmeans(
 # save EMMs to a CSV file
 write.csv(
   as.data.frame(emm_receiver_damage$emmeans),
-  "tables/emm-receiver-damage-emmeans.csv",
+  "tables/emms/emm-receiver-damage-emmeans.csv",
   row.names = FALSE
 )
 
 # save pairwise contrasts to a CSV file
 write.csv(
   as.data.frame(emm_receiver_damage$contrasts),
-  "tables/emm-receiver-damage-contrasts.csv",
+  "tables/emms/emm-receiver-damage-contrasts.csv",
   row.names = FALSE
 )
 
