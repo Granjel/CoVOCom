@@ -31,3 +31,11 @@ pal_treat["Control"] <- colorspace::darken(pal_treat["Control"], amount = 0.05) 
 fig_width <- 6.5 # width in inches
 fig_height <- 4.5 # height in inches
 fig_dpi <- 640 # resolution in dpi
+
+# create directories: figures and tables
+if (!dir.exists("figures")) {
+  dir.create("figures")
+}
+if (!dir.exists("tables")) {
+  dir.create("tables")
+}
