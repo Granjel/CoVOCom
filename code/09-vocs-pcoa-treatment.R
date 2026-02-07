@@ -2,18 +2,30 @@
 
 # load data and variables ------------------------------------------------
 
-# fix I need to go back to the previous version of code/07-vocs-permanova.R and see what vocs is!
+# load packages and data
+source("code/03-load-data.R")
 
-# run permanova script, which loads data and variables
-source("code/07-vocs-permanova.R")
+# load saved subsets and distance matrices from PERMANOVA
+vocs_objects <- readRDS(
+  file.path(
+    "tables/permanova/objects-for-pcoa",
+    "vocs-subsets-and-distances.rds"
+  )
+)
+
+# choose which VOC type to analyze (must match safe_name keys)
+voc_type_key <- "all"
+
+# subset and distance matrix for this VOC type
+vocs_subset <- vocs_objects$subsets[[voc_type_key]]
+compounds_bray <- as.dist(vocs_objects$distances[[voc_type_key]])
 
 # PCoA -------------------------------------------------------------------
 
 # use capscale to do PCoA
 vocs_pcoa_treatment <- capscale(
-  compounds_bray ~ 1 + Condition(vocs$population),
-  data = vocs,
-  comm = vocs %>% dplyr::select(voc1:voc17)
+  compounds_bray ~ 1 + Condition(population),
+  data = vocs_subset
 )
 
 # extract eigenvalues
@@ -27,20 +39,16 @@ variance_explained_treatment <-
 ordination_scores_treatment <-
   data.frame(
     id = rownames(vocs_pcoa_treatment$CA$u),
-    treatment = vocs$treatment,
-    plant = vocs$code,
-    MDS1 = scores(vocs_pcoa_treatment, scaling = 3, correlation = TRUE)$sites[,
-      1
-    ],
-    MDS2 = scores(vocs_pcoa_treatment, scaling = 3, correlation = TRUE)$sites[,
-      2
-    ]
+    treatment = vocs_subset$treatment,
+    plant = vocs_subset$code,
+    MDS1 = site_scores_treatment[, 1],
+    MDS2 = site_scores_treatment[, 2]
   )
 
 # envfit for fitted order arrows
 envfit_treatment <- envfit(
   vocs_pcoa_treatment,
-  vocs %>% dplyr::select(code, treatment, voc1:voc17)
+  vocs_subset %>% dplyr::select(code, treatment, voc1:voc17)
 )
 
 # extract centroids for both treatments
@@ -59,10 +67,9 @@ arrows_treatment <- data.frame(
   pval = envfit_treatment$vectors$pvals,
   rsq = envfit_treatment$vectors$r
 ) %>%
-  # keep only keep significant arrows with r2 >= 0.6
   filter(pval <= 0.05, rsq >= 0.6)
 
-# change the names of the compounds to more meaningful names from vocs_info
+# change the names of the compounds
 arrows_treatment$x <-
   vocs_info$compound[match(arrows_treatment$x, vocs_info$id)]
 
@@ -134,7 +141,7 @@ p_pcoa_treatment <-
     ),
     arrow = arrow(length = unit(0.25, "cm")),
     colour = "black",
-    size = 0.7,
+    size = 0.7
   ) +
 
   # add centroids with colors for treatments and different shape than other points
@@ -161,8 +168,7 @@ p_pcoa_treatment <-
     alpha = 0.5,
     color = NA,
     label.size = 0,
-    segment.color = NA,
-    max.overlaps = Inf
+    segment.color = NA
   ) +
 
   # trick to add transparent background but not transparent text!
@@ -176,8 +182,7 @@ p_pcoa_treatment <-
     size = 3.25,
     color = "black",
     fill = NA,
-    segment.color = NA,
-    max.overlaps = Inf
+    segment.color = NA
   ) +
 
   # color palette for treatments
@@ -189,7 +194,8 @@ p_pcoa_treatment <-
     axis.line = element_blank(),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
-    legend.position = c(0.8, 0.95),
+    # remove axis lines
+    legend.position = c(0.15, 0.95),
     # legend.position = "top",
     text = element_text(size = 12),
     plot.margin = margin(20, 5, 5, 5)
@@ -201,7 +207,7 @@ p_pcoa_treatment <-
 # save plot
 f <- 0.9 # scaling factor for dimensions
 ggsave(
-  "figures/pcoa-vocs-treatment-trans.png",
+  "figures/pcoa-vocs-treatment-all.png",
   p_pcoa_treatment,
   width = fig_width * f,
   height = fig_height * f,
