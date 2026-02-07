@@ -60,7 +60,11 @@ envfit_treatment <- envfit(
 
 # extract centroids for treatments
 centroids_treatment <- data.frame(
-  x = rownames(envfit_treatment$factors$centroids),
+  x = gsub(
+    "^treatment",
+    "",
+    rownames(envfit_treatment$factors$centroids)
+  ),
   MDS1 = envfit_treatment$factors$centroids[, 1],
   MDS2 = envfit_treatment$factors$centroids[, 2]
 )
