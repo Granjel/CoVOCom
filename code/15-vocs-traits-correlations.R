@@ -62,7 +62,7 @@ run_cor <- function(df, voc, trait) {
 
 # define traits
 trait_cols <- traits %>%
-  dplyr::select(greenhouse_flower_time:fitness) %>%
+  dplyr::select(greenhouse_flower_time:last_col()) %>%
   names
 
 # define VOCs
