@@ -203,13 +203,22 @@ traits <- read.csv(
     genotype = as.factor(genotype)
   ) %>%
 
-  # average variables across experiments (e.g. the mean of rosettes1 and rosettes2 creates rosettes)
-  mutate(
-    rosettes = rowMeans(cbind(rosettes1, rosettes2), na.rm = TRUE),
-    adults = rowMeans(cbind(adults1, adults2), na.rm = TRUE),
-    survival = rowMeans(cbind(survival1, survival2), na.rm = TRUE),
-    flower_time = rowMeans(cbind(flower_time1, flower_time2), na.rm = TRUE),
-    fruits = rowMeans(cbind(fruits1, fruits2), na.rm = TRUE),
-    seeds = rowMeans(cbind(seeds1, seeds2), na.rm = TRUE),
-    fitness = rowMeans(cbind(fitness1, fitness2), na.rm = TRUE)
+  # # average variables across experiments (e.g. the mean of rosettes1 and rosettes2 creates rosettes)
+  # mutate(
+  #   rosettes = rowMeans(cbind(rosettes1, rosettes2), na.rm = TRUE),
+  #   adults = rowMeans(cbind(adults1, adults2), na.rm = TRUE),
+  #   survival = rowMeans(cbind(survival1, survival2), na.rm = TRUE),
+  #   flower_time = rowMeans(cbind(flower_time1, flower_time2), na.rm = TRUE),
+  #   fruits = rowMeans(cbind(fruits1, fruits2), na.rm = TRUE),
+  #   seeds = rowMeans(cbind(seeds1, seeds2), na.rm = TRUE),
+  #   fitness = rowMeans(cbind(fitness1, fitness2), na.rm = TRUE)
+  # ) %>%
+
+  # select only greenhouse_flower_time, seed_weight, and seed_germination as traits
+  dplyr::select(
+    population,
+    genotype,
+    greenhouse_flower_time,
+    seed_weight,
+    seed_germination
   )
