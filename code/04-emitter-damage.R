@@ -30,11 +30,13 @@ lm_emitter_damage <- lm(
   data = emitter_damage
 )
 
-# LMM of damage on emitters (random intercept for genotype nested within population)
-lmm_emitter_damage <- lmer(
-  sqrt(herbivory_emitter) ~ population + (1 | population:genotype),
-  data = emitter_damage,
-  REML = FALSE
+# LMM of damage on emitters (random intercept for genotype nested within population); singular fit warning suppressed
+lmm_emitter_damage <- suppressMessages(
+  lmer(
+    sqrt(herbivory_emitter) ~ population + (1 | population:genotype),
+    data = emitter_damage,
+    REML = FALSE
+  )
 )
 
 # compare LMM to LM with AIC
