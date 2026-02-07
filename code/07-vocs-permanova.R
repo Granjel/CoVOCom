@@ -8,6 +8,11 @@ if (!dir.exists("tables/permanova")) {
   dir.create("tables/permanova")
 }
 
+# create directory for combined PERMANOVA objects
+if (!dir.exists("tables/permanova/objects-for-pcoa")) {
+  dir.create("tables/permanova/objects-for-pcoa")
+}
+
 # helper to make safe filenames (lowercase, non-alphanumerics -> hyphens, trim edge hyphens)
 safe_name <- function(x) {
   gsub("(^-|-$)", "", gsub("[^a-z0-9]+", "-", tolower(x)))
@@ -16,11 +21,15 @@ safe_name <- function(x) {
 # prepare list of types (each VOC type plus an "All" aggregate)
 types <- c(unique(vocs_info$type), "All")
 
-# list to store results for each type
+# lists to store results for each type
 results <- list()
+subsets <- list()
+distances <- list()
 
 # perform permanova for each type of VOCs and save results
 for (t in types) {
+  message(sprintf("Running PERMANOVA with VOC type: %s", t))
+
   # choose VOC ids for this type (or all ids when t == "All")
   ids <- if (t == "All") {
     unique(vocs_info$id)
@@ -46,6 +55,9 @@ for (t in types) {
     ungroup() %>%
     filter(total_emission > 0)
 
+  # store subset for downstream analyses (e.g., PCoA)
+  subsets[[safe_name(t)]] <- sub
+
   # need at least two samples to compute distances / permanova
   if (nrow(sub) < 2) {
     next
@@ -60,6 +72,9 @@ for (t in types) {
     dplyr::select(sub, starts_with("voc")),
     method = "bray"
   )
+
+  # store distance matrix for this VOC type
+  distances[[safe_name(t)]] <- as.matrix(dist)
 
   # run PERMANOVA with treatment, population and their interaction
   # stratify permutations by pop:genotype to respect group structure
@@ -87,5 +102,14 @@ for (t in types) {
   results[[t]] <- res
 }
 
-# remove temporary objects from workspace
-rm(dist, res, sub, t, ids)
+# save all subsets and distance matrices together
+saveRDS(
+  list(subsets = subsets, distances = distances),
+  file.path(
+    "tables/permanova/objects-for-pcoa",
+    "vocs-subsets-and-distances.rds"
+  )
+)
+
+# clean environment completely
+rm(list = ls())
