@@ -3,7 +3,12 @@
 # load packages and data -------------------------------------------------
 source("code/03-load-data.R")
 
-# select only relevant data
+# create dir for emms and contrasts --------------------------------------
+if (!dir.exists("tables/emms")) {
+  dir.create("tables/emms")
+}
+
+# select only relevant data ----------------------------------------------
 vocs_total <- df %>%
   dplyr::select(
     # select relevant columns
@@ -105,14 +110,14 @@ emm_vocs_total <-
 # save EMMs to a CSV file
 write.csv(
   as.data.frame(emm_vocs_total$emmeans),
-  "tables/emm-vocs-total-emmeans.csv",
+  "tables/emms/emm-vocs-total-emmeans.csv",
   row.names = FALSE
 )
 
 # save pairwise contrasts to a CSV file
 write.csv(
   as.data.frame(emm_vocs_total$contrasts),
-  "tables/emm-vocs-total-contrasts.csv",
+  "tables/emms/emm-vocs-total-contrasts.csv",
   row.names = FALSE
 )
 
