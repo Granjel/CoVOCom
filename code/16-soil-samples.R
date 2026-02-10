@@ -256,8 +256,7 @@ plot_lob_perc <- lob_perc_treatment_population %>%
   ggplot(aes(x = percent_above_lob, y = compound, fill = type)) +
   geom_col(width = 0.7) +
   labs(
-    title = "Percentage of samples above the LOB",
-    x = "Percentage of samples above LOB",
+    x = "Percentage of VOC measurements above the limit of blanks",
     y = "VOC compound",
     fill = "VOC type"
   ) +
@@ -273,6 +272,13 @@ plot_lob_perc <- lob_perc_treatment_population %>%
 ggsave(
   "figures/percentage-above-lob-by-compound-treatment-population.jpeg",
   plot_lob_perc,
-  width = 10,
+  width = 9,
   height = 6
 )
+
+# calculate mean and sd of the percentage of samples above the lob in the whole dataset
+lob_perc_overall <- lob_perc %>%
+  summarise(
+    mean = mean(percent_above_lob, na.rm = TRUE),
+    sd = sd(percent_above_lob, na.rm = TRUE)
+  )
