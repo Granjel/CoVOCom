@@ -127,7 +127,7 @@ write.csv(
 
 # select traits with at least some significant correlations
 main_traits <- summary_cor_results %>%
-  filter(n_significant > 0) %>%
+  filter(n_significant > 0) %>% # comment to get all traits
   dplyr::pull(trait) %>%
   unique()
 
