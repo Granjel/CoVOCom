@@ -37,14 +37,14 @@ plot_soil_blanks <- soils_sum %>%
     compound = factor(compound, levels = rev(unique(compound)))
   ) %>%
   ggplot(aes(x = mean_abundance, y = compound, color = type)) +
-  geom_point(size = 2.75) +
+  geom_point(size = 2.5) +
   geom_errorbarh(
     aes(
       xmin = q05_abundance,
       xmax = q95_abundance
     ),
     height = 0.3,
-    size = 0.6
+    linewidth = 0.5
   ) +
   labs(
     # title = "Mean abundance of VOCs in soil samples",
@@ -60,7 +60,7 @@ plot_soil_blanks <- soils_sum %>%
   # add a viridis color scale
   scale_color_viridis_d(begin = 0.075, end = 0.95) +
   # add legend inside plot area
-  theme(legend.position = c(0.725, 0.5))
+  theme(legend.position = c(0.725, 0.45))
 
 # save the plot
 ggsave(
@@ -93,36 +93,39 @@ vocs_sum <- vocs_type %>%
     `Mean Terpenoids` = mean(`Terpenoids`, na.rm = TRUE),
     `Q05 Terpenoids` = quantile(`Terpenoids`, probs = 0.05, na.rm = TRUE),
     `Q95 Terpenoids` = quantile(`Terpenoids`, probs = 0.95, na.rm = TRUE),
-    `Mean Alcohols and esters` = mean(`Alcohols and esters`, na.rm = TRUE),
-    `Q05 Alcohols and esters` = quantile(
-      `Alcohols and esters`,
+    `Mean Esters` = mean(`Esters`, na.rm = TRUE),
+    `Q05 Esters` = quantile(
+      `Esters`,
       probs = 0.05,
       na.rm = TRUE
     ),
-    `Q95 Alcohols and esters` = quantile(
-      `Alcohols and esters`,
+    `Q95 Esters` = quantile(
+      `Esters`,
       probs = 0.95,
       na.rm = TRUE
     ),
-    `Mean Long-chain aldehydes` = mean(`Long-chain aldehydes`, na.rm = TRUE),
-    `Q05 Long-chain aldehydes` = quantile(
-      `Long-chain aldehydes`,
+    `Mean Long-chain aldehydes and alkanes` = mean(
+      `Long-chain aldehydes and alkanes`,
+      na.rm = TRUE
+    ),
+    `Q05 Long-chain aldehydes and alkanes` = quantile(
+      `Long-chain aldehydes and alkanes`,
       probs = 0.05,
       na.rm = TRUE
     ),
-    `Q95 Long-chain aldehydes` = quantile(
-      `Long-chain aldehydes`,
+    `Q95 Long-chain aldehydes and alkanes` = quantile(
+      `Long-chain aldehydes and alkanes`,
       probs = 0.95,
       na.rm = TRUE
     ),
-    `Mean Long-chain alkanes` = mean(`Long-chain alkanes`, na.rm = TRUE),
-    `Q05 Long-chain alkanes` = quantile(
-      `Long-chain alkanes`,
+    `Mean Benzoates` = mean(`Benzoates`, na.rm = TRUE),
+    `Q05 Benzoates` = quantile(
+      `Benzoates`,
       probs = 0.05,
       na.rm = TRUE
     ),
-    `Q95 Long-chain alkanes` = quantile(
-      `Long-chain alkanes`,
+    `Q95 Benzoates` = quantile(
+      `Benzoates`,
       probs = 0.95,
       na.rm = TRUE
     ),
@@ -150,7 +153,7 @@ plot_vocs_experiment <- vocs_sum %>%
   ggplot(aes(x = Mean, y = compound, color = type, shape = treatment)) +
   geom_point(
     position = position_dodge(width = 0.7),
-    size = 2.75
+    size = 2.5
   ) +
   geom_errorbarh(
     aes(
@@ -158,7 +161,7 @@ plot_vocs_experiment <- vocs_sum %>%
       xmax = Q95
     ),
     height = 0.3,
-    size = 0.6,
+    linewidth = 0.5,
     position = position_dodge(width = 0.7)
   ) +
   labs(
@@ -207,11 +210,15 @@ soil_lob <- soils %>%
 vocs_type_sum <- vocs_type %>%
   dplyr::mutate(
     value = rowSums(
-      dplyr::across(`Short-chain oxygenated VOCs`:`Long-chain alkanes`),
+      dplyr::across(
+        `Short-chain oxygenated VOCs`:`Long-chain aldehydes and alkanes`
+      ),
       na.rm = TRUE
     )
   ) %>%
-  dplyr::select(-(`Short-chain oxygenated VOCs`:`Long-chain alkanes`))
+  dplyr::select(
+    -(`Short-chain oxygenated VOCs`:`Long-chain aldehydes and alkanes`)
+  )
 
 # add the lob for each VOC to the vocs_type_sum data frame by joining on compound name and create a new column indicating whether the mean abundance is above the lob
 vocs_type_sum <- vocs_type_sum %>%
