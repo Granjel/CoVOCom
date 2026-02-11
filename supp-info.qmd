@@ -20,6 +20,11 @@ crossref:
   fig-title: Figure S
   fig-prefix: Fig. S
 
+execute: 
+  echo: false
+  message: false
+  warning: false
+
 bibliography: supp-info/grateful-refs.bib
 csl: supp-info/new-phytologist.csl
 ---
@@ -38,13 +43,9 @@ csl: supp-info/new-phytologist.csl
 - Figures SX
 - Software citations -->
 
-```{r load-data}
-#| echo: false
-#| message: false
-#| warning: false
-
-# load all packages and data
-source("code/03-load-data.R")
+```{r load-all-data}
+# load all necessary scripts
+source("code/16-soil-samples.R")
 ```
 
 {{< pagebreak >}}
@@ -56,9 +57,29 @@ source("code/03-load-data.R")
 
 # Supporting figures
 
-See @fig-s1 for an example of blablabla.
+```{r plot-soil-blanks}
+#| label: fig-soil-blanks
+#| fig-cap: "Volatile organic compounds (VOCs) from blank samples (no plants, only seedling wells with soil), collected to account for background emissions not produced by plants."
+#| fig-alt: "A figure showing the mean abundance of VOCs in soil samples, with error bars representing the 5th and 95th percentiles. The x-axis represents the abundance in ng h^-1, and the y-axis lists the VOC compounds. Different colors indicate different VOC types."
+#| fig-align: center
+#| fig-width: 6
+#| fig-height: 6
+# print plot
+plot_soil_blanks
+```
 
-![Attempt.](figures/paper-figures/fig1.jpeg){#fig-s1 width=0.8\textwidth}
+{{< pagebreak >}}
+
+```{r plot-lob-perc}
+#| label: fig-lob-perc
+#| fig-cap: "Percentage of VOC measurements above the limit of blanks for each compound across maternal lines, for each population and treatment, with the different VOC types indicated by color."
+#| fig-alt: "A figure showing the percentage of VOC measurements above the limit of blanks for each compound across maternal lines, for each population and treatment. The x-axis represents the percentage of measurements above the limit of blanks, and the y-axis lists the VOC compounds. Different colors indicate different VOC types."
+#| fig-align: center
+#| fig-width: 9
+#| fig-height: 7.5
+# print plot
+plot_lob_perc
+```
 
 {{< pagebreak >}}
 
