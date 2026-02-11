@@ -1,18 +1,18 @@
-id,compound,type
-voc1,(E)-2-Methyl-2-butenal,Short-chain oxygenated VOCs
-voc2,alpha-Pinene,Terpenoids
-voc3,beta-Pinene,Terpenoids
-voc4,5-Methyl-2-heptanone,Short-chain oxygenated VOCs
-voc5,6-Methyl-5-hepten-2-one,Short-chain oxygenated VOCs
-voc6,"Butanoic acid, butyl ester",Alcohols and esters
-voc7,2-Ethyl-1-hexanol,Alcohols and esters
-voc8,Acetophenone,Short-chain oxygenated VOCs
-voc9,Nonanal,Long-chain aldehydes
-voc10,cis-2-Nonenal,Long-chain aldehydes
-voc11,Dodecane,Long-chain alkanes
-voc12,Decanal,Long-chain aldehydes
-voc13,Tridecane,Long-chain alkanes
-voc14,Tetradecane,Long-chain alkanes
-voc15,Dodecanal,Long-chain aldehydes
-voc16,trans-Geranylaceone,Terpenoids
-voc17,Tetradecanal,Long-chain aldehydes
+id,compound,type,group,pathway
+voc1,(E)-2-Methyl-2-butenal,Short-chain oxygenated VOCs,Fatty acid derivatives,LOX
+voc2,alpha-Pinene,Terpenoids,Terpenoids,MVA/MEP
+voc3,beta-Pinene,Terpenoids,Terpenoids,MVA/MEP
+voc4,5-Methyl-2-heptanone,Short-chain oxygenated VOCs,Fatty acid derivatives,LOX
+voc5,6-Methyl-5-hepten-2-one,Short-chain oxygenated VOCs,Fatty acid derivatives,LOX
+voc6,"Butanoic acid, methyl ester",Esters,Esters,Alcohol esterification
+voc7,2-Ethyl-1-hexanol,Short-chain oxygenated VOCs,Fatty acid derivatives,LOX
+voc8,Acetophenone,Benzoates,Aromatic phenylpropanoids,Shikimate
+voc9,Nonanal,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc10,cis-2-Nonenal,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc11,Dodecane,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc12,Decanal,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc13,Tridecane,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc14,Tetradecane,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc15,Dodecanal,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc16,trans-Geranylaceone,Terpenoids,Terpenoids,MVA/MEP
+voc17,Tetradecanal,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
