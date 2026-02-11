@@ -16,6 +16,10 @@ format:
     header-includes: |
       #show heading: set block(below: 2em)
 
+crossref:
+  fig-title: Figure S
+  fig-prefix: Fig. S
+
 bibliography: supp-info/grateful-refs.bib
 csl: supp-info/new-phytologist.csl
 ---
@@ -42,6 +46,19 @@ csl: supp-info/new-phytologist.csl
 # load all packages and data
 source("code/03-load-data.R")
 ```
+
+{{< pagebreak >}}
+
+# Supporting tables
+...
+
+{{< pagebreak >}}
+
+# Supporting figures
+
+See @fig-s1 for an example of blablabla.
+
+![Attempt.](figures/paper-figures/fig1.jpeg){#fig-s1 width=0.8\textwidth}
 
 {{< pagebreak >}}
 
