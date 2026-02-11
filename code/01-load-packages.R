@@ -31,7 +31,10 @@ pacman::p_load(
   colorspace, # function to darken colors
   MetBrewer, # colors from painting at the Metropolitan Museum of Art in NY (https://github.com/BlakeRMills/MetBrewer)
   MoMAColors, # colors from painting at the Museum of Modern Art in NY (https://github.com/BlakeRMills/MoMAColors)
-  grateful # for citing packages
+  grateful, # for citing packages
+  kableExtra, # for formatting tables
+  webshot2, # for saving html as images
+  chromote # for saving html as images (alternative to webshot2)
 )
 
 # create csl and bib files for citing packages in the supplementary information
