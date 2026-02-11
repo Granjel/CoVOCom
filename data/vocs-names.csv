@@ -7,12 +7,12 @@ voc5,6-Methyl-5-hepten-2-one,Short-chain oxygenated VOCs,Fatty acid derivatives,
 voc6,"Butanoic acid, methyl ester",Esters,Esters,Alcohol esterification
 voc7,2-Ethyl-1-hexanol,Short-chain oxygenated VOCs,Fatty acid derivatives,LOX
 voc8,Acetophenone,Benzoates,Aromatic phenylpropanoids,Shikimate
-voc9,Nonanal,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
-voc10,cis-2-Nonenal,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
-voc11,Dodecane,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
-voc12,Decanal,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
-voc13,Tridecane,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
-voc14,Tetradecane,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
-voc15,Dodecanal,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc9,Nonanal,Long-chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc10,cis-2-Nonenal,Long-chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc11,Dodecane,Long-chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc12,Decanal,Long-chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc13,Tridecane,Long-chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc14,Tetradecane,Long-chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc15,Dodecanal,Long-chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
 voc16,trans-Geranylaceone,Terpenoids,Terpenoids,MVA/MEP
-voc17,Tetradecanal,Long chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
+voc17,Tetradecanal,Long-chain aldehydes and alkanes,Fatty acid derivatives,LOX (cuticular)
