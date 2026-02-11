@@ -1,0 +1,61 @@
+---
+title: "Supporting Information"
+subtitle: >
+  `Herbivore-induced volatile signalling is conserved across \ locally adapted populations of _Arabidopsis thaliana_`{=typst}
+authors:
+  Rodrigo R. Granjel`#super[1]`{=typst}*,
+  Lucía Martín-Cacheda`#super[2,3]`{=typst}
+  Gregory Röder`#super[4]`{=typst},
+  Iago Izquierdo-Ferreiro`#super[5]`{=typst},
+  Andrea Martín-Díaz`#super[6]`{=typst},
+  F. Xavier Picó`#super[6]`{=typst}
+
+format: 
+  typst: 
+    mainfont: Roboto
+    header-includes: |
+      #show heading: set block(below: 2em)
+
+bibliography: supp-info/grateful-refs.bib
+csl: supp-info/new-phytologist.csl
+---
+
+`#v(0.75cm)`{=typst}
+
+`#super[1]Basque Centre for Climate Change (BC3), 48940, Leioa, Spain; #super[2]Department of Ecology, Environment and Plant Sciences, Stockholm University, SE, 10691, Stockholm, Sweden; #super[3]Misión Biológica de Galicia (MBG-CSIC), Apartado de correos 28, Pontevedra, Galicia 36080, Spain; #super[4]Institute of Biology, University of Neuchâtel, Rue Emile-Argand 11, Neuchâtel 2000, Switzerland; #super[5]Centro Oceanográfico de Vigo, Instituto Español de Oceanografía (IEO, CSIC), Subida a Radio Faro 50, 36390 Vigo, Spain; #super[6]Departamento de Ecología y Evolución, Estación Biológica de Doñana (EBD), Consejo Superior de Investigaciones Científicas (CSIC), 41092 Sevilla, Spain \ \`{=typst}
+
+*Corresponding email: [granjel@gmail.com](mailto:granjel@gmail.com)
+
+<!-- `#v(1.5cm)`{=typst}
+
+**This document contains:**
+
+- Tables SX
+- Figures SX
+- Software citations -->
+
+```{r load-data}
+#| echo: false
+#| message: false
+#| warning: false
+
+# load all packages and data
+source("code/03-load-data.R")
+```
+
+{{< pagebreak >}}
+
+# Software citations
+
+```{r}
+#| echo: false
+grateful::cite_packages(
+  output = "paragraph",
+  pkgs = "Session",
+  out.dir = "supp-info",
+  citation.style = "new-phytologist"
+)
+```
+
+{{< pagebreak >}}
+
