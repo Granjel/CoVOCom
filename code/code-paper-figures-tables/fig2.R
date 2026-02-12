@@ -21,7 +21,8 @@ p_emitter_damage <- p_emitter_damage +
 # tweak panel b
 p_pcoa_population <- p_pcoa_population +
   theme(
-    text = element_text(size = 12)
+    text = element_text(size = 12),
+    legend.background = element_blank()
   )
 
 # compose
