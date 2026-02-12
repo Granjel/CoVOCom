@@ -1,4 +1,4 @@
-# Models for each VOC type
+# Models for each VOC type (classes of compounds)
 #
 # for each VOC type:
 # 1) fit GLM/GLMM variants,
