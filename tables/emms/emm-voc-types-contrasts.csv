@@ -1,0 +1,11 @@
+"voc_type","contrast","population","ratio","SE","df","null","z.ratio","p.value"
+"Short-chain oxygenated VOCs","Control / (Herbivore-induced)","Bon",0.865878667630899,0.133226631240557,Inf,1,-0.935966085447203,0.349290649602036
+"Short-chain oxygenated VOCs","Control / (Herbivore-induced)","Cai",0.957646201324473,0.128450620531407,Inf,1,-0.322644908348159,0.746964179132015
+"Terpenoids","Control / (Herbivore-induced)","Bon",0.946803031983793,0.167178991187691,Inf,1,-0.309585725964923,0.756876012389495
+"Terpenoids","Control / (Herbivore-induced)","Cai",0.844626253505138,0.134650753085746,Inf,1,-1.05921783058673,0.289500586423422
+"Esters","Control / (Herbivore-induced)","Bon",0.70964423469078,0.190117455677,Inf,1,-1.28027144312479,0.200449687340755
+"Esters","Control / (Herbivore-induced)","Cai",1.05470073291518,0.217642461688876,Inf,1,0.258085031059754,0.796341283828788
+"Benzoates","Control / (Herbivore-induced)","Bon",0.667810733888906,0.152696969010522,Inf,1,-1.76577770227349,0.0774331507774903
+"Benzoates","Control / (Herbivore-induced)","Cai",1.05118810355871,0.234055418132278,Inf,1,0.224205088074464,0.822597724538473
+"Long-chain aldehydes and alkanes","Control / (Herbivore-induced)","Bon",0.702857870653206,0.0868584817228231,Inf,1,-2.85324000709695,0.00432759235149055
+"Long-chain aldehydes and alkanes","Control / (Herbivore-induced)","Cai",0.825338299876665,0.0854042321546533,Inf,1,-1.85510152829339,0.0635817296096776
