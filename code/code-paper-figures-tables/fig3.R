@@ -58,7 +58,7 @@ fig3 <- ggarrange(
 # save figure
 ggsave(
   plot = fig3,
-  "figures/paper-figures/fig3-emm.jpeg",
+  "figures/paper-figures/fig3.jpeg",
   width = 6.25,
   height = 7.25,
   dpi = fig_dpi
