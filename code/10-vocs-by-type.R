@@ -187,7 +187,7 @@ p_emm <- ggplot(
   labs(
     x = "Population",
     y = expression(
-      "VOCs emissions (" * ng ~ h^{
+      "Emissions (" * ng ~ h^{
         -1
       } *
         ")"
