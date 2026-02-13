@@ -16,10 +16,6 @@ format:
     header-includes: |
       #show heading: set block(below: 2em)
 
-crossref:
-  fig-title: Figure S
-  fig-prefix: Fig. S
-
 execute: 
   echo: false
   message: false
@@ -44,23 +40,93 @@ csl: supp-info/new-phytologist.csl
 - Software citations -->
 
 ```{r load-all-data}
-# load all necessary scripts
-source("code/16-soil-samples.R")
+# load all necessary scripts and objects for the supporting information
+results_permanova <- read.csv("tables/permanova/permanova-vocs-all.csv")
+source("code/12-soil-samples.R")
 ```
 
 {{< pagebreak >}}
 
 # Supporting tables
-...
+
+**Table S1.** Results of the PERMANOVA analysis testing for differences in volatile organic compound (VOC) profiles between populations (Bon and Cai), treatments (control and herbivore-induced), and their interaction. The table includes degrees of freedom (Df), sum of squares (SS), R², F value, and p value for each factor and their interaction.
+
+```{r table-permanova}
+results_permanova <- results_permanova %>%
+  mutate(
+    # rename factors for better table formatting
+    factor = case_when(
+      factor == "population" ~ "Population",
+      factor == "treatment" ~ "Treatment",
+      factor == "treatment:population" ~ "Population x Treatment",
+      TRUE ~ factor
+    )
+  ) %>%
+  # reorder rows explicitly
+  slice(match(
+    c("Population", "Treatment", "Population x Treatment", "Residual", "Total"),
+    factor
+  )) %>%
+  mutate(
+    # round values
+    Pr..F. = {
+      p <- round(Pr..F., 3)
+      sig <- case_when(
+        p < 0.001 ~ "***",
+        p < 0.01 ~ "**",
+        p < 0.05 ~ "*",
+        TRUE ~ ""
+      )
+      ifelse(
+        is.na(p),
+        "",
+        paste0(
+          format(p, nsmall = 3, trim = TRUE),
+          ifelse(sig == "", "", paste0(" ", sig))
+        )
+      )
+    },
+    F = round(F, 2),
+    R2 = round(R2, 3),
+    SumOfSqs = round(SumOfSqs, 3)
+  ) %>%
+  mutate(across(everything(), ~ ifelse(is.na(.), "", .)))
+
+table_permanova <- kable(
+  results_permanova,
+  col.names = c(
+    "",
+    "Df",
+    "SS",
+    "R²",
+    "F",
+    "p"
+  ),
+  digits = c(0, 0, 2, 3, 2, 4),
+  align = "c",
+  booktabs = TRUE
+)
+
+table_permanova
+```
 
 {{< pagebreak >}}
 
 # Supporting figures
 
+```{r plot-vocs-experiment}
+#| fig-align: center
+#| fig-width: 8
+#| fig-height: 9.25
+# print plot
+plot_vocs_experiment
+```
+
+**Figure S1.** Volatile organic compounds (VOCs) from _Arabidopsis thaliana_ plants in the experiment, separated by population and treatment. Dots represent mean emissions and error bars represent the 5th and 95th percentiles. Different colors indicate different VOC types.
+
+{{< pagebreak >}}
+
 ```{r plot-soil-blanks}
-#| label: fig-soil-blanks
-#| fig-cap: "Volatile organic compounds (VOCs) from blank samples (no plants, only seedling wells with soil), collected to account for background emissions not produced by plants."
-#| fig-alt: "A figure showing the mean abundance of VOCs in soil samples, with error bars representing the 5th and 95th percentiles. The x-axis represents the abundance in ng h^-1, and the y-axis lists the VOC compounds. Different colors indicate different VOC types."
 #| fig-align: center
 #| fig-width: 6
 #| fig-height: 6
@@ -68,18 +134,19 @@ source("code/16-soil-samples.R")
 plot_soil_blanks
 ```
 
+**Figure S2.** Volatile organic compounds (VOCs) from blank samples (no plants, only seedling wells with soil), collected to account for background emissions not produced by plants. Dots represent mean emissions and error bars represent the 5th and 95th percentiles. Different colors indicate different VOC types.
+
 {{< pagebreak >}}
 
 ```{r plot-lob-perc}
-#| label: fig-lob-perc
-#| fig-cap: "Percentage of VOC measurements above the limit of blanks for each compound across maternal lines, for each population and treatment, with the different VOC types indicated by color."
-#| fig-alt: "A figure showing the percentage of VOC measurements above the limit of blanks for each compound across maternal lines, for each population and treatment. The x-axis represents the percentage of measurements above the limit of blanks, and the y-axis lists the VOC compounds. Different colors indicate different VOC types."
 #| fig-align: center
 #| fig-width: 9
 #| fig-height: 7.5
 # print plot
 plot_lob_perc
 ```
+
+**Figure S3.** Percentage of VOC measurements above the limit of blanks for each compound across maternal lines, for each population and treatment, with the different VOC types indicated by color.
 
 {{< pagebreak >}}
 
