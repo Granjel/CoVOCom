@@ -122,8 +122,8 @@ saveRDS(
   )
 )
 
-# clean environment completely
-rm(list = ls())
+# clean environment completely (except packages_loaded)
+rm(list = setdiff(ls(), "packages_loaded"))
 
 # # in df, count how many rows have VOC values that are all zero
 # (i.e., total emission = 0); by treatment and population
