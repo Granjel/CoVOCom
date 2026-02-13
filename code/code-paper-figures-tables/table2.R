@@ -29,6 +29,24 @@ data <- data %>%
     compound = ifelse(is.na(compound), "<b>Total VOCs</b>", compound)
   )
 
+# create desired compound order from vocs_info
+compound_order <- vocs_info %>%
+  arrange(type, compound) %>%
+  pull(compound)
+
+# add total VOCs at the end
+compound_order <- c(compound_order, "<b>Total VOCs</b>")
+
+# apply ordering to the correlation table
+data <- data %>%
+  mutate(
+    compound = factor(compound, levels = compound_order)
+  ) %>%
+  arrange(compound) %>%
+  mutate(
+    compound = as.character(compound)
+  )
+
 # append correlations for greenhouse flowering time (drop duplicate voc column)
 data <- data %>%
   cbind(
@@ -51,7 +69,7 @@ data <- data %>%
 table_traits <- data %>%
   kbl(
     col.names = c(
-      " ",
+      "VOCs",
       rep(c("Bon", "Cai"), 2),
       " ",
       " ",
@@ -65,12 +83,12 @@ table_traits <- data %>%
   add_header_above(c(
     " " = 1,
     "Control" = 2,
-    "Herbivory-induced" = 2,
+    "Herbivore-induced" = 2,
     " " = 1,
     " " = 1,
     " " = 1,
     "Control" = 2,
-    "Herbivory-induced" = 2
+    "Herbivore-induced" = 2
   )) %>%
   add_header_above(c(
     " " = 1,
@@ -80,7 +98,12 @@ table_traits <- data %>%
     " " = 1,
     "Flowering time" = 4
   )) %>%
-  pack_rows("Individual VOCs", 1, 17)
+  pack_rows("Benzoates", 1, 1) %>%
+  pack_rows("Esters", 2, 2) %>%
+  pack_rows("Long-chain aldehydes and alkanes", 3, 10) %>%
+  pack_rows("Short-chain oxygenated VOCs", 11, 14) %>%
+  pack_rows("Terpenoids", 15, 17) %>%
+  pack_rows("", 18, 18, indent = FALSE)
 
 # save table as HTML
 save_kable(
