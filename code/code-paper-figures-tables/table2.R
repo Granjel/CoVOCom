@@ -36,8 +36,7 @@ data <- data %>%
     rep(" ", nrow(data)),
     rep(" ", nrow(data)),
     read.csv(
-      "tables/traits-correlations/
-        vocs-traits-correlations-greenhouse_flower_time.csv"
+      "tables/traits-correlations/vocs-traits-correlations-greenhouse_flower_time.csv"
     ) %>%
       dplyr::select(-voc) %>%
       relocate(

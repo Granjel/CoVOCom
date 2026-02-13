@@ -99,16 +99,16 @@ table_vocs <- vocs_table_long %>%
 # Save the HTML table
 save_kable(
   table_vocs,
-  "tables/paper-tables/table0.html",
+  "tables/paper-tables/table1.html",
 )
 
 # render HTML to PNG for manuscript inclusion
 webshot2::webshot(
-  "tables/paper-tables/table0.html",
-  file = "tables/paper-tables/table0.png",
+  "tables/paper-tables/table1.html",
+  file = "tables/paper-tables/table1.png",
   vwidth = 500,
   zoom = 5
 )
 
 # remove the temporary HTML file after rendering
-file.remove("tables/paper-tables/table0.html")
+file.remove("tables/paper-tables/table1.html")
