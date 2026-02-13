@@ -42,6 +42,7 @@ csl: supp-info/new-phytologist.csl
 ```{r load-all-data}
 # load all necessary scripts and objects for the supporting information
 results_permanova <- read.csv("tables/permanova/permanova-vocs-all.csv")
+source("code/06-vocs-total.R")
 source("code/12-soil-samples.R")
 ```
 
@@ -147,6 +148,18 @@ plot_lob_perc
 ```
 
 **Figure S3.** Percentage of VOC measurements above the limit of blanks for each compound across maternal lines, for each population and treatment, with the different VOC types indicated by color.
+
+{{< pagebreak >}}
+
+```{r plot-vocs-total}
+#| fig-align: center
+#| fig-width: 5.5
+#| fig-height: 4
+# print plot
+p_vocs_total
+```
+
+**Figure S4.** Volatile organic compounds (VOCs) from _Arabidopsis thaliana_ plants in the experiment, separated by population and treatment. Dots represent mean emissions and error bars represent the 5th and 95th percentiles. Different colors indicate different VOC types.
 
 {{< pagebreak >}}
 
