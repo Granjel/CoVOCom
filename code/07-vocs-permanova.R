@@ -1,6 +1,7 @@
 # VOCs Permanova
 
-# switch: run only "All" (all VOC types together) by default, or set to TRUE to run all VOC types separately + "All"
+# switch: run only "All" (all VOC types together) by default,
+# or set to TRUE to run all VOC types separately + "All"
 run_all_types <- FALSE
 
 # create dirs for permanova ----------------------------------------------
@@ -18,7 +19,8 @@ if (!dir.exists("tables/permanova/objects-for-pcoa")) {
 # load packages and data -------------------------------------------------
 source("code/03-load-data.R")
 
-# helper to make safe filenames (lowercase, non-alphanumerics -> hyphens, trim edge hyphens)
+# helper to make safe filenames
+# (lowercase, non-alphanumerics -> hyphens, trim edge hyphens)
 safe_name <- function(x) {
   gsub("(^-|-$)", "", gsub("[^a-z0-9]+", "-", tolower(x)))
 }
@@ -53,7 +55,8 @@ for (t in types) {
   # - keep sample metadata and the selected VOC columns
   # - create a population:genotype strata column for permutations
   # - drop rows with any NA
-  # - keep only samples with > 0 total emission (otherwise distance matrix will fail)
+  # - keep only samples with > 0 total emission
+  #   (otherwise distance matrix will fail)
   sub <- df %>%
     dplyr::select(code, population, genotype, treatment, n, all_of(ids)) %>%
     mutate(pop_gen = interaction(population, genotype, sep = "_")) %>%
@@ -122,7 +125,8 @@ saveRDS(
 # clean environment completely
 rm(list = ls())
 
-# # in df, count how many rows have VOC values that are all zero (i.e., total emission = 0); by treatment and population
+# # in df, count how many rows have VOC values that are all zero
+# (i.e., total emission = 0); by treatment and population
 # df %>%
 #   drop_na() %>%
 #   rowwise() %>%

@@ -1,4 +1,4 @@
-# table with mean and 95% confidence intervals of emissions by VOC type and compound
+# table with mean and 95% CI of emissions by VOC type and compound
 
 # load shared data objects (e.g., vocs_info, vocs_type) and dependencies
 source("code/03-load-data.R")

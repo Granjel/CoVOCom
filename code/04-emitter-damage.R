@@ -21,11 +21,11 @@ emitter_damage <- df %>%
     size_emitter,
     herbivory_emitter
   ) %>%
-  filter(treatment == "Herbivore-induced") # we want only the herbivory treatment
+  filter(treatment == "Herbivore-induced") # we want only this treatment
 
 # data exploration
 # hist(emitter_damage$herbivory_emitter) # untransformed data; uncomment to run
-# hist(sqrt(emitter_damage$herbivory_emitter)) # square root transformation; uncomment to run
+# hist(sqrt(emitter_damage$herbivory_emitter)) # sqrt transf; uncomment to run
 
 # determine whether to model random effects ------------------------------
 
@@ -35,7 +35,8 @@ lm_emitter_damage <- lm(
   data = emitter_damage
 )
 
-# LMM of damage on emitters (random intercept for genotype nested within population); singular fit warning suppressed
+# LMM of damage on emitters (random intercept for genotype nested within
+# population); singular fit warning suppressed
 lmm_emitter_damage <- suppressMessages(
   lmer(
     sqrt(herbivory_emitter) ~ population + (1 | population:genotype),
@@ -47,8 +48,8 @@ lmm_emitter_damage <- suppressMessages(
 # compare LMM to LM with AIC
 AIC(lm_emitter_damage, lmm_emitter_damage) # LM is better
 
-# model diagnostics with DHARMa
-# simulateResiduals(fittedModel = lm_emitter_damage, plot = TRUE) # uncomment to run
+# model diagnostics with DHARMa; uncomment to run
+# simulateResiduals(fittedModel = lm_emitter_damage, plot = TRUE)
 
 # remove LMM to avoid confusion
 rm(lmm_emitter_damage)
@@ -121,9 +122,9 @@ pvalue_emitter_damage <- summary(emm_emitter_damage$contrasts)$p.value
 
 # plot options
 transparency_boxplot <- 1 # alpha for all layers so overlaps are visible
-justification_boxplot <- 0.2 # shifts right half leftwards and left half rightwards
+justification_boxplot <- 0.2 # shifts right half leftwards, left half rightwards
 width_boxplot <- 0.2 # max halfeye width (as a fraction of panel width)
-justification_hist <- 0.275 # shifts right half leftwards and left half rightwards
+justification_hist <- 0.275 # shifts right half leftwards, left half rightwards
 width_hist <- 0.3 # max halfeye width (as a fraction of panel width)
 mean_size <- 2.5 # size of mean point
 star_size <- 7 # size of significance stars
@@ -137,7 +138,7 @@ p_emitter_damage <-
 
   # jittered raw points
   # - color encodes treatment (same as fill to keep legend consistent)
-  # - position_jitterdodge jitters within each population and dodges between treatments
+  # - position_jitterdodge jitters within population, dodges between treatments
   geom_jitter(
     aes(color = population),
     position = position_jitterdodge(
@@ -164,7 +165,7 @@ p_emitter_damage <-
   # distribution for control (left half)
   # - filter the data inside the layer
   # - side = "left" draws a half violin to the left of the x position
-  # - justification nudges the slab so both halves mirror each other around the box
+  # - justification nudges the slab so halves mirror each other around the box
   stat_halfeye(
     data = ~ dplyr::filter(.x, population == "Bon"),
     side = "left",
@@ -186,7 +187,7 @@ p_emitter_damage <-
     alpha = transparency_boxplot,
     width = width_hist,
     .width = 0,
-    point_colour = NA # keep slab outline (default) for a subtle edge; set slab_color = NA to remove
+    point_colour = NA # keep slab outline (default) for a subtle edge
   ) +
 
   stat_summary(
@@ -255,7 +256,7 @@ ggsave(
 
 # plot options
 transparency_boxplot <- 1 # alpha for all layers so overlaps are visible
-justification_boxplot <- 0 # shifts right half leftwards and left half rightwards
+justification_boxplot <- 0 # shifts right half leftwards, left half rightwards
 width_boxplot <- 0.5 # max halfeye width (as a fraction of panel width)
 mean_size <- 2.5 # size of mean point
 star_size <- 7 # size of significance stars

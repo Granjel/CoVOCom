@@ -86,7 +86,8 @@ cor_results <- vocs_traits %>%
   ) %>%
   ungroup()
 
-# find how many significant correlations there are per population x treatment x trait and add average r
+# find how many significant correlations there are
+# per population x treatment x trait and add average r
 summary_cor_results <- cor_results %>%
   group_by(population, treatment, trait) %>%
   summarise(
@@ -103,7 +104,8 @@ write.csv(
   row.names = FALSE
 )
 
-# filter by traits of interest and add stars: * for p < 0.05, ** for p < 0.01, *** for p < 0.001
+# filter by traits of interest and add stars:
+# * for p < 0.05, ** for p < 0.01, *** for p < 0.001
 cor_results_stars <- cor_results %>%
   mutate(
     significance = case_when(

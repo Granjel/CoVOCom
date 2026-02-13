@@ -158,7 +158,7 @@ p_pcoa_population <-
     size = 0.7
   ) +
 
-  # add centroids with colors for populations and different shape than other points
+  # add centroids with colors for populations and different shape
   geom_point(
     data = centroids_population,
     aes(x = MDS1, y = MDS2, fill = population),
@@ -170,7 +170,8 @@ p_pcoa_population <-
     show.legend = FALSE
   ) +
 
-  # add labels with the names of the VOCs well separated from each other and with a white background
+  # add labels with the names of the VOCs well separated from each other
+  # and with a white background
   geom_label_repel(
     data = arrows_population,
     aes(

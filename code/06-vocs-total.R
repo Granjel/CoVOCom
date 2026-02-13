@@ -30,29 +30,29 @@ vocs_total <- df %>%
 
 # determine whether to model random effects ------------------------------
 
-# GLM of total VOCs emissions (without random effect) # uncomment to run if needed, but see note below
+# GLM of total VOCs emissions (without random effect); do not run, see below
 # glm_vocs_total <- glmmTMB(
 #   total ~ treatment * population,
 #   data = vocs_total,
 #   family = tweedie(link = "log")
 # )
-# note: tweedie GLM did not converge because of data dispersion; random effects are needed
+# note tweedie GLM didm't converge due to data dispersion; random effects needed
 
-# GLMM of total VOCs emissions (random intercept for genotype nested within population)
+# GLMM of total VOCs emissions (random: genotype nested within population)
 glmm_vocs_total <- glmmTMB(
   total ~ treatment * population + (1 | population:genotype),
   data = vocs_total,
   family = tweedie(link = "log")
 )
 
-# compare GLMM to GLM with likelihood ratio test (LRT) # uncomment to run if needed, but see note below
-# AIC(glm_vocs_total, glmm_vocs_total) # note: no need to test (see above)
+# compare GLMM to GLM with AIC # uncomment to run if needed, but see note below
+# AIC(glm_vocs_total, glmm_vocs_total) # note no need to test (above)
 
-# model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glmm_vocs_total, plot = TRUE) # uncomment to run
+# model diagnostics with DHARMa; uncomment to run
+# simulateResiduals(fittedModel = glmm_vocs_total, plot = TRUE)
 
 # remove GLM to avoid confusion # uncomment to run if needed, but see note below
-# rm(glm_vocs_total) # note: nothing to remove since GLM did not converge (see above)
+# rm(glm_vocs_total) # note nothing to remove since GLM didn't converge (above)
 
 # determine whether to model covariates ----------------------------------
 
@@ -130,9 +130,9 @@ pvalue_vocs_total <- summary(emm_vocs_total$contrasts)$p.value
 # plot -------------------------------------------------------------------
 
 # global plot parameters
-position_boxplot <- 3 # global knob for horizontal dodging; larger = more separation
+position_boxplot <- 3 # global knob for horizontal dodging; larger, > separation
 transparency_boxplot <- 0.9 # alpha for all layers so overlaps are visible
-justification_boxplot <- -0.26 * position_boxplot # shifts right half leftwards and left half rightwards
+justification_boxplot <- -0.26 * position_boxplot # shifts halves differently
 width_boxplot <- 0.35 # max boxplot width (as a fraction of panel width)
 width_histogram <- 0.3 # max histogram width (as a fraction of panel width)
 mean_size <- 2.5 # size of mean point
@@ -147,7 +147,7 @@ p_vocs_total <-
 
   # jittered raw points
   # - color encodes treatment (same as fill to keep legend consistent)
-  # - position_jitterdodge jitters within each population and dodges between treatments
+  # - position_jitterdodge jitters within population, dodges between treatments
   geom_jitter(
     aes(color = treatment),
     position = position_jitterdodge(
@@ -172,7 +172,7 @@ p_vocs_total <-
   # distribution for control (left half)
   # - filter the data inside the layer
   # - side = "left" draws a half violin to the left of the x position
-  # - justification nudges the slab so both halves mirror each other around the box
+  # - justification nudges the slab so halves mirror each other around the box
   stat_halfeye(
     data = ~ dplyr::filter(.x, treatment == "Control"),
     side = "left",
@@ -194,7 +194,7 @@ p_vocs_total <-
     alpha = transparency_boxplot,
     width = width_histogram,
     .width = 0,
-    point_colour = NA # keep slab outline (default) for a subtle edge; set slab_color = NA to remove
+    point_colour = NA # keep slab outline (default) for a subtle edge
   ) +
 
   stat_summary(
@@ -266,7 +266,7 @@ stars_vocs_total <- vocs_total %>%
 # add to your existing plot object
 p_vocs_total <-
   p_vocs_total +
-  # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # a bit of headroom
+  # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # some headroom
   geom_text(
     data = stars_vocs_total,
     aes(x = population, y = y, label = label),
@@ -287,7 +287,7 @@ ggsave(
 # additional: regular boxplot --------------------------------------------
 
 # global plot parameters
-position_boxplot <- 0.6 # global knob for horizontal dodging; larger = more separation
+position_boxplot <- 0.6 # global knob for horizontal dodging; > separation
 transparency_boxplot <- 0.9 # alpha for all layers so overlaps are visible
 width_boxplot <- 0.5 # max halfeye width (as a fraction of panel width)
 mean_size <- 2.5 # size of mean point
@@ -374,7 +374,7 @@ stars_vocs_total <- vocs_total %>%
 # add to your existing plot object
 p_vocs_total_boxplot <-
   p_vocs_total_boxplot +
-  # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # a bit of headroom
+  # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # some headroom
   geom_text(
     data = stars_vocs_total,
     aes(x = population, y = y, label = label),

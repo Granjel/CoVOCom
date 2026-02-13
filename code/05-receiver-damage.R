@@ -23,8 +23,8 @@ receiver_damage <- df %>%
   )
 
 # data exploration
-# hist(receiver_damage$herbivory_receiver) # untransformed data; uncomment to run
-# hist(sqrt(receiver_damage$herbivory_receiver)) # square root transformation; uncomment to run
+# hist(receiver_damage$herbivory_receiver) # untransformed; uncomment to run
+# hist(sqrt(receiver_damage$herbivory_receiver)) # sqrt transf; uncomment to run
 
 # determine whether to model random effects ------------------------------
 
@@ -34,7 +34,7 @@ lm_receiver_damage <- lm(
   data = receiver_damage
 )
 
-# LMM of damage on receivers (random intercept for genotype nested within population)
+# LMM of damage on receivers (random: genotype nested within population)
 lmm_receiver_damage <- lmer(
   sqrt(herbivory_receiver) ~ treatment * population + (1 | population:genotype),
   data = receiver_damage,
@@ -44,8 +44,8 @@ lmm_receiver_damage <- lmer(
 # compare LMM to LM with AIC
 AIC(lm_receiver_damage, lmm_receiver_damage) # LMM is better
 
-# model diagnostics with DHARMa
-# simulateResiduals(fittedModel = glmm_receiver_damage, plot = TRUE) # uncomment to run
+# model diagnostics with DHARMa; uncomment to run
+# simulateResiduals(fittedModel = glmm_receiver_damage, plot = TRUE)
 
 # remove LM to avoid confusion
 rm(lm_receiver_damage)
@@ -134,9 +134,9 @@ pvalue_receiver_damage <- summary(emm_receiver_damage$contrasts)$p.value
 # plot -------------------------------------------------------------------
 
 # global plot parameters
-position_boxplot <- 3 # global knob for horizontal dodging; larger = more separation
+position_boxplot <- 3 # global knob for horizontal dodging; larger, > separation
 transparency_boxplot <- 1 # alpha for all layers so overlaps are visible
-justification_boxplot <- -0.2 * position_boxplot # shifts right half leftwards and left half rightwards
+justification_boxplot <- -0.2 * position_boxplot # shifts halves differently
 width_boxplot <- 0.35 # max halfeye width (as a fraction of panel width)
 mean_size <- 2.5 # size of mean point
 star_size <- 7 # size of significance stars
@@ -150,7 +150,7 @@ p_receiver_damage <-
 
   # jittered raw points
   # - color encodes treatment (same as fill to keep legend consistent)
-  # - position_jitterdodge jitters within each population and dodges between treatments
+  # - position_jitterdodge jitters within population, dodges between treatments
   geom_jitter(
     aes(color = treatment),
     position = position_jitterdodge(
@@ -175,7 +175,7 @@ p_receiver_damage <-
   # distribution for control (left half)
   # - filter the data inside the layer
   # - side = "left" draws a half violin to the left of the x position
-  # - justification nudges the slab so both halves mirror each other around the box
+  # - justification nudges the slab so halves mirror each other around the box
   stat_halfeye(
     data = ~ dplyr::filter(.x, treatment == "Control"),
     side = "left",
@@ -197,7 +197,7 @@ p_receiver_damage <-
     alpha = transparency_boxplot,
     width = width_boxplot,
     .width = 0,
-    point_colour = NA # keep slab outline (default) for a subtle edge; set slab_color = NA to remove
+    point_colour = NA # keep slab outline (default) for a subtle edge
   ) +
 
   stat_summary(
@@ -253,7 +253,7 @@ stars_receiver_damage <- receiver_damage %>%
 # add to your existing plot object
 p_receiver_damage <-
   p_receiver_damage +
-  # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # a bit of headroom
+  # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # some headroom
   geom_text(
     data = stars_receiver_damage,
     aes(x = population, y = y, label = label),
@@ -274,7 +274,7 @@ ggsave(
 # additional: regular boxplot --------------------------------------------
 
 # global plot parameters
-position_boxplot <- 0.6 # global knob for horizontal dodging; larger = more separation
+position_boxplot <- 0.6 # global knob for horizontal dodging; > separation
 transparency_boxplot <- 1 # alpha for all layers so overlaps are visible
 width_boxplot <- 0.5 # max halfeye width (as a fraction of panel width)
 mean_size <- 2.5 # size of mean point
@@ -346,7 +346,7 @@ stars_receiver_damage <- receiver_damage %>%
 # add to your existing plot object
 p_receiver_damage_boxplot <-
   p_receiver_damage_boxplot +
-  # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # a bit of headroom
+  # scale_y_continuous(expand = expansion(mult = c(0, 0.10))) + # some headroom
   geom_text(
     data = stars_receiver_damage,
     aes(x = population, y = y, label = label),

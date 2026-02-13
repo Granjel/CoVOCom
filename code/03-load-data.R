@@ -98,7 +98,8 @@ df <- read.csv(
     voc17 = as.numeric(voc17)
   )
 
-# calculate the limit of blanks (lob) for each VOC as the 95% quantile of the abundance values in the soil samples for each compound and type
+# calculate the limit of blanks (lob) for each VOC as the 95% quantile of the
+# abundance values in the soil samples for each compound and type
 soil_lob <- soils %>%
   dplyr::left_join(
     vocs_info %>% dplyr::select(id, type),
@@ -110,7 +111,8 @@ soil_lob <- soils %>%
     .groups = "drop"
   )
 
-# take each VOC value in df and, if it is below the lob for that VOC, set it to 0; if it's NA, keep it as NA; if it's above the lob, keep the original value
+# take each VOC value in df and, if it is below the lob for that VOC, set it to
+# 0; if it's NA, keep it as NA; if it's above the lob, keep the original value
 df <- df %>%
   pivot_longer(
     cols = starts_with("voc"),
@@ -203,7 +205,8 @@ traits <- read.csv(
     genotype = as.factor(genotype)
   ) %>%
 
-  # # average variables across experiments (e.g. the mean of rosettes1 and rosettes2 creates rosettes)
+  # # average variables across experiments
+  # (e.g. the mean of rosettes1 and rosettes2 creates rosettes)
   # mutate(
   #   rosettes = rowMeans(cbind(rosettes1, rosettes2), na.rm = TRUE),
   #   adults = rowMeans(cbind(adults1, adults2), na.rm = TRUE),
@@ -214,7 +217,7 @@ traits <- read.csv(
   #   fitness = rowMeans(cbind(fitness1, fitness2), na.rm = TRUE)
   # ) %>%
 
-  # select only greenhouse_flower_time, seed_weight, and seed_germination as traits
+  # select only greenhouse_flower_time, seed_weight, seed_germination as traits
   dplyr::select(
     population,
     genotype,

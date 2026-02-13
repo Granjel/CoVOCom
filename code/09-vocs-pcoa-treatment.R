@@ -158,7 +158,7 @@ p_pcoa_treatment <-
     size = 0.7,
   ) +
 
-  # add centroids with colors for treatments and different shape than other points
+  # add centroids with colors for treatments and different shape
   geom_point(
     data = centroids_treatment,
     aes(x = MDS1, y = MDS2, color = x, fill = x),
@@ -170,7 +170,8 @@ p_pcoa_treatment <-
     show.legend = FALSE
   ) +
 
-  # add labels with the names of the VOCs well separated from each other and with a white background
+  # add labels with the names of the VOCs well separated from each other
+  # and with a white background
   geom_label_repel(
     data = arrows_treatment,
     aes(

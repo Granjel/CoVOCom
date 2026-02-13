@@ -28,9 +28,9 @@ soils_sum <- soils %>%
   ) %>%
   arrange(type, id)
 
-# plot: points for mean and error bars for sd; order types alphabetically and compounds alphabetically within each type; abundance on x axis
+# plot: points for mean and error bars for sd; order types alphabetically
+# and compounds alphabetically within each type; abundance on x axis
 plot_soil_blanks <- soils_sum %>%
-  # order types alphabetically and compounds alphabetically within each type (reversed)
   arrange(type, compound) %>%
   mutate(
     type = factor(type, levels = sort(unique(type))),
@@ -72,7 +72,8 @@ ggsave(
 
 # add VOC abundance means and sd for populations and treatments ----------
 
-# summarise: mean and sd per VOC, population, and treatment (keep compound name and type)
+# summarise: mean and sd per VOC, population, and treatment
+# (keep compound name and type)
 vocs_sum <- vocs_type %>%
   group_by(population, treatment, compound) %>%
   summarise(
@@ -140,7 +141,8 @@ vocs_sum <- vocs_type %>%
   # remove nonsense values (NA/NaN)
   filter(!is.na(Mean))
 
-# plot the same way as soils_sum but faceted by population and with different shape dodged points for treatment; color by type of VOC
+# plot the same way as soils_sum but faceted by population and with different
+# shape dodged points for treatment; color by type of VOC
 plot_vocs_experiment <- vocs_sum %>%
   # order types alphabetically and compounds alphabetically within each type
   arrange(type, compound) %>%
@@ -148,7 +150,7 @@ plot_vocs_experiment <- vocs_sum %>%
     type = factor(type, levels = sort(unique(type))),
     compound = factor(compound, levels = rev(unique(compound)))
   ) %>%
-  # reverse the factor levels for treatment so dodged points plot in reverse order
+  # reverse the factor levels for treatment so dodged points plot in reverse
   mutate(treatment = forcats::fct_rev(factor(treatment))) %>%
   ggplot(aes(x = Mean, y = compound, color = type, shape = treatment)) +
   geom_point(
@@ -198,7 +200,8 @@ ggsave(
 
 # lob --------------------------------------------------------------------
 
-# calculate the limit of blanks (lob) for each VOC as the 95% quantile of the abundance values in the soil samples for each compound and type
+# calculate the limit of blanks (lob) for each VOC as the 95% quantile of the
+# abundance values in the soil samples for each compound and type
 soil_lob <- soils %>%
   group_by(id, type, compound) %>%
   summarise(
@@ -220,7 +223,9 @@ vocs_type_sum <- vocs_type %>%
     -(`Short-chain oxygenated VOCs`:`Long-chain aldehydes and alkanes`)
   )
 
-# add the lob for each VOC to the vocs_type_sum data frame by joining on compound name and create a new column indicating whether the mean abundance is above the lob
+# add the lob for each VOC to the vocs_type_sum data frame by joining on
+# compound name and create a new column indicating whether
+# the mean abundance is above the lob
 vocs_type_sum <- vocs_type_sum %>%
   left_join(
     soil_lob %>%
@@ -249,7 +254,8 @@ lob_perc_treatment_population <- vocs_type_sum %>%
     .groups = "drop"
   )
 
-# plot the percentage of samples above the lob for each compound, colored by compound and faceted by treatment and population
+# plot the percentage of samples above the lob for each compound, colored by
+# compound and faceted by treatment and population
 plot_lob_perc <- lob_perc_treatment_population %>%
   left_join(
     vocs_info %>% dplyr::select(compound, type),
@@ -283,7 +289,7 @@ ggsave(
   height = 6
 )
 
-# calculate mean and sd of the percentage of samples above the lob in the whole dataset
+# calculate mean and sd of the % of samples above the lob in the whole dataset
 lob_perc_overall <- lob_perc %>%
   summarise(
     mean = mean(percent_above_lob, na.rm = TRUE),
